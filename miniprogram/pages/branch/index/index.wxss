@@ -1,0 +1,219 @@
+/* pages/branch/index/index.wxss */
+.branch-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 顶部欢迎信息 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+}
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.welcome-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 8rpx;
+}
+
+.logout-btn {
+  padding: 16rpx 32rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 30rpx;
+}
+
+.logout-btn text {
+  font-size: 26rpx;
+  color: #ffffff;
+}
+
+/* 数据概览 */
+.data-overview {
+  margin: -30rpx 30rpx 20rpx;
+  padding: 30rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 20rpx;
+}
+
+.data-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.data-card {
+  width: calc(25% - 12rpx);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 0;
+  background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ff 100%);
+  border-radius: 12rpx;
+}
+
+.data-card:nth-child(2) {
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+}
+
+.data-card:nth-child(3) {
+  background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
+}
+
+.data-card:nth-child(4) {
+  background: linear-gradient(135deg, #fff0f6 0%, #ffd6e7 100%);
+}
+
+.data-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.data-card:nth-child(2) .data-value {
+  color: #52c41a;
+}
+
+.data-card:nth-child(3) .data-value {
+  color: #fa8c16;
+}
+
+.data-card:nth-child(4) .data-value {
+  color: #eb2f96;
+}
+
+.data-label {
+  font-size: 22rpx;
+  color: #666666;
+  margin-top: 8rpx;
+}
+
+/* 功能入口 */
+.menu-section {
+  margin: 0 30rpx 20rpx;
+  padding: 30rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32rpx 20rpx;
+  background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ff 100%);
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.menu-item:nth-child(2) {
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+}
+
+.menu-item:nth-child(3) {
+  background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
+}
+
+.menu-item:nth-child(4) {
+  background: linear-gradient(135deg, #fff0f6 0%, #ffd6e7 100%);
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.menu-icon {
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 16rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.menu-icon text {
+  font-size: 40rpx;
+}
+
+.menu-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.menu-desc {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+/* 快捷操作 */
+.quick-section {
+  margin: 0 30rpx;
+  padding: 30rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.quick-btns {
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+
+.quick-btn {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+  border-radius: 40rpx;
+}
+
+.quick-btn:nth-child(2) {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+}
+
+.quick-btn:nth-child(3) {
+  background: linear-gradient(135deg, #fa8c16 0%, #ffa940 100%);
+}
+
+.quick-btn text {
+  font-size: 26rpx;
+  color: #ffffff;
+}

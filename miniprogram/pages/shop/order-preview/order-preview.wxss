@@ -1,0 +1,188 @@
+/* pages/shop/order-preview/order-preview.wxss */
+.preview-container {
+    min-height: 100vh;
+    background: #f5f5f5;
+    padding-bottom: 150rpx;
+}
+
+.section {
+    background: #fff;
+    margin-bottom: 20rpx;
+    padding: 24rpx;
+}
+
+.section-title {
+    font-size: 30rpx;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 20rpx;
+    padding-bottom: 16rpx;
+    border-bottom: 1rpx solid #f5f5f5;
+}
+
+/* 商品列表 */
+.product-list {
+    padding: 0;
+}
+
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16rpx 0;
+    border-bottom: 1rpx solid #f5f5f5;
+}
+
+.product-item:last-child {
+    border-bottom: none;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-name {
+    font-size: 28rpx;
+    color: #333;
+    display: block;
+    margin-bottom: 8rpx;
+}
+
+.product-price {
+    font-size: 24rpx;
+    color: #999;
+}
+
+.product-actions {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 30rpx;
+    padding: 4rpx;
+}
+
+.btn-minus, .btn-plus {
+    width: 48rpx;
+    height: 48rpx;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28rpx;
+    font-weight: 500;
+}
+
+.btn-minus {
+    background: #fff;
+    color: #666;
+}
+
+.btn-plus {
+    background: #1890ff;
+    color: #fff;
+}
+
+.quantity {
+    width: 60rpx;
+    text-align: center;
+    font-size: 28rpx;
+}
+
+.item-total {
+    font-size: 28rpx;
+    font-weight: 500;
+    color: #ff4d4f;
+    min-width: 100rpx;
+    text-align: right;
+}
+
+.btn-remove {
+    font-size: 24rpx;
+    color: #ff4d4f;
+    padding: 8rpx 16rpx;
+}
+
+/* 日期选择 */
+.date-picker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20rpx;
+    background: #f5f5f5;
+    border-radius: 12rpx;
+}
+
+.date-value {
+    font-size: 28rpx;
+    color: #333;
+}
+
+.date-arrow {
+    font-size: 24rpx;
+    color: #999;
+}
+
+/* 备注输入 */
+.remark-input {
+    width: 100%;
+    height: 150rpx;
+    padding: 20rpx;
+    background: #f5f5f5;
+    border-radius: 12rpx;
+    font-size: 28rpx;
+    box-sizing: border-box;
+}
+
+/* 底部结算栏 */
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20rpx 24rpx;
+    background: #fff;
+    box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+    padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+}
+
+.amount-info {
+    display: flex;
+    align-items: baseline;
+}
+
+.amount-label {
+    font-size: 28rpx;
+    color: #666;
+    margin-right: 8rpx;
+}
+
+.amount-value {
+    font-size: 40rpx;
+    font-weight: 600;
+    color: #ff4d4f;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #1890ff, #36cfc9);
+    color: #fff;
+    font-size: 32rpx;
+    font-weight: 500;
+    padding: 0 60rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    border-radius: 44rpx;
+    border: none;
+}
+
+.btn-submit::after {
+    border: none;
+}

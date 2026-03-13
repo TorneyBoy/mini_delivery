@@ -1,0 +1,7 @@
+{
+    "usingComponents": {
+        "tab-bar": "/components/tab-bar/index"
+    },
+    "navigationBarTitleText": "商品",
+    "enablePullDownRefresh": true
+}

@@ -1,0 +1,166 @@
+/* pages/branch/shop-edit/shop-edit.wxss */
+.shop-edit-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20rpx 30rpx 40rpx;
+}
+
+/* 表单区域 */
+.form-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 20rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.form-label {
+  width: 160rpx;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+/* 设置区域 */
+.settings-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 20rpx;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.setting-title {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.setting-desc {
+  font-size: 22rpx;
+  color: #999999;
+  margin-top: 8rpx;
+}
+
+.picker-value {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: #52c41a;
+}
+
+.picker-arrow {
+  margin-left: 10rpx;
+  color: #999999;
+}
+
+/* 统计区域 */
+.stats-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #52c41a;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999999;
+  margin-top: 10rpx;
+}
+
+/* 按钮区域 */
+.btn-section {
+  margin-top: 40rpx;
+}
+
+.btn {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 44rpx;
+  margin-bottom: 20rpx;
+}
+
+.btn text {
+  font-size: 32rpx;
+}
+
+.btn-primary {
+  background-color: #52c41a;
+}
+
+.btn-primary text {
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #ffffff;
+  border: 2rpx solid #ff4d4f;
+}
+
+.btn-danger text {
+  color: #ff4d4f;
+}
+
+.btn-default {
+  background-color: #52c41a;
+}
+
+.btn-default text {
+  color: #ffffff;
+}

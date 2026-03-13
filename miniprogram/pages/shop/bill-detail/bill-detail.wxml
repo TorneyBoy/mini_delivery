@@ -1,0 +1,70 @@
+<!-- pages/shop/bill-detail/bill-detail.wxml -->
+<view class="bill-detail-container">
+    <view wx:if="{{loading}}" class="loading-container">
+        <text>加载中...</text>
+    </view>
+
+    <block wx:if="{{bill}}">
+        <!-- 账单状态 -->
+        <view class="status-section {{bill.status === 1 ? 'paid' : ''}}">
+            <view class="status-icon">{{bill.status === 1 ? '✓' : '¥'}}</view>
+            <text class="status-text">{{statusMap[bill.status].text}}</text>
+            <text class="status-amount">¥{{bill.totalAmount}}</text>
+            <text class="status-date" wx:if="{{bill.paidAt}}">支付时间: {{bill.paidAt}}</text>
+        </view>
+
+        <!-- 账单信息 -->
+        <view class="section">
+            <view class="section-title">账单信息</view>
+            <view class="info-row" bindtap="onCopyBillNo">
+                <text class="info-label">账单编号</text>
+                <view class="info-value-wrapper">
+                    <text class="info-value">{{bill.billNo}}</text>
+                    <text class="copy-btn">复制</text>
+                </view>
+            </view>
+            <view class="info-row">
+                <text class="info-label">账单日期</text>
+                <text class="info-value">{{bill.billDate}}</text>
+            </view>
+            <view class="info-row">
+                <text class="info-label">创建时间</text>
+                <text class="info-value">{{bill.createdAt}}</text>
+            </view>
+        </view>
+
+        <!-- 关联订单 -->
+        <view class="section" wx:if="{{bill.orders && bill.orders.length > 0}}">
+            <view class="section-title">关联订单 ({{bill.orders.length}}单)</view>
+            <view class="order-list">
+                <view class="order-item" wx:for="{{bill.orders}}" wx:key="orderId" 
+                      data-id="{{item.orderId}}" bindtap="goToOrderDetail">
+                    <view class="order-header">
+                        <text class="order-no">{{item.orderNo}}</text>
+                        <text class="order-amount">¥{{item.orderAmount}}</text>
+                    </view>
+                    <view class="order-products">
+                        <view class="product-row" wx:for="{{item.items}}" wx:for-item="product" wx:key="productId">
+                            <text class="product-name">{{product.productName}}</text>
+                            <text class="product-quantity">x{{product.quantity}}</text>
+                            <text class="product-price">¥{{product.subtotal}}</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+
+        <!-- 金额汇总 -->
+        <view class="amount-section">
+            <view class="amount-row total">
+                <text class="amount-label">账单金额</text>
+                <text class="amount-value">¥{{bill.totalAmount}}</text>
+            </view>
+        </view>
+
+        <!-- 底部操作 -->
+        <view class="bottom-bar" wx:if="{{bill.status === 0}}">
+            <button class="btn-pay" bindtap="onPay">立即支付 ¥{{bill.totalAmount}}</button>
+        </view>
+    </block>
+</view>

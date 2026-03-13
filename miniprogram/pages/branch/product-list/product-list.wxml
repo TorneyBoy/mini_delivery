@@ -1,0 +1,64 @@
+<!--pages/branch/product-list/product-list.wxml-->
+<view class="product-list-container">
+  <!-- 分类导航 -->
+  <scroll-view class="category-nav" scroll-x>
+    <view 
+      class="category-item {{currentCategory === index ? 'active' : ''}}" 
+      wx:for="{{categories}}" 
+      wx:key="index"
+      data-index="{{index}}"
+      bindtap="onCategoryChange">
+      {{item}}
+    </view>
+  </scroll-view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索商品名称或类别" value="{{searchKey}}" bindinput="onSearchInput" />
+    <view class="search-btn" bindtap="handleSearch">搜索</view>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="product-list" wx:if="{{list.length > 0}}">
+    <view class="product-card" wx:for="{{list}}" wx:key="id">
+      <image class="product-image" src="{{item.imageUrl || '/images/default-product.png'}}" mode="aspectFill" />
+      <view class="product-info">
+        <view class="product-header">
+          <text class="product-name">{{item.name}}</text>
+          <view class="status-tag {{item.status === 1 ? 'active' : 'inactive'}}">
+            {{item.status === 1 ? '上架' : '下架'}}
+          </view>
+        </view>
+        <view class="product-category">{{item.category}}</view>
+        <view class="product-price">
+          <text class="price-item">老用户: ¥{{item.oldPrice}}/{{item.unit}}</text>
+          <text class="price-item">新用户: ¥{{item.newPrice}}/{{item.unit}}</text>
+        </view>
+        <view class="product-desc" wx:if="{{item.description}}">{{item.description}}</view>
+      </view>
+      <view class="card-footer">
+        <view class="btn-detail" bindtap="goToDetail" data-id="{{item.id}}">
+          <text>详情</text>
+        </view>
+        <view class="btn-edit" bindtap="goToEdit" data-id="{{item.id}}">
+          <text>编辑</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && list.length === 0}}">
+    <text class="empty-text">暂无商品数据</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore && list.length > 0}}">
+    <text bindtap="loadMore">加载更多</text>
+  </view>
+
+  <!-- 底部添加按钮 -->
+  <view class="add-btn" bindtap="goToAdd">
+    <text>+ 添加商品</text>
+  </view>
+</view>

@@ -1,0 +1,160 @@
+/* pages/admin/branch-detail/branch-detail.wxss */
+.branch-detail-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20rpx 30rpx 40rpx;
+}
+
+/* 表单区域 */
+.form-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 20rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.form-label {
+  width: 160rpx;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+/* 状态开关区域 */
+.status-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.status-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.status-desc {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 统计区域 */
+.stats-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 30rpx;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999999;
+  margin-top: 10rpx;
+}
+
+/* 信息区域 */
+.info-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+/* 按钮区域 */
+.btn-section {
+  margin-top: 40rpx;
+}
+
+.btn {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 44rpx;
+  margin-bottom: 20rpx;
+}
+
+.btn text {
+  font-size: 32rpx;
+}
+
+.btn-primary {
+  background-color: #1890ff;
+}
+
+.btn-primary text {
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #ffffff;
+  border: 2rpx solid #ff4d4f;
+}
+
+.btn-danger text {
+  color: #ff4d4f;
+}

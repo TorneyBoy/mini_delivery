@@ -1,0 +1,26 @@
+<!--pages/login/login.wxml-->
+<view class="login-container">
+  <view class="login-header">
+    <image class="logo" src="/assets/images/logo.png" mode="aspectFit"></image>
+    <text class="title">配送管理系统</text>
+    <text class="subtitle">请登录您的账号</text>
+  </view>
+  
+  <view class="login-form">
+    <view class="form-item">
+      <text class="form-label">手机号</text>
+      <input class="form-input" type="number" placeholder="请输入手机号" maxlength="11" 
+             value="{{phone}}" bindinput="onPhoneInput"/>
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" type="password" placeholder="请输入密码" 
+             value="{{password}}" bindinput="onPasswordInput"/>
+    </view>
+    
+    <button class="btn-login" bindtap="handleLogin" loading="{{loading}}">
+      登录
+    </button>
+  </view>
+</view>

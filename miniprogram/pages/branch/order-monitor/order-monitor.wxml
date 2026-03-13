@@ -1,0 +1,106 @@
+<!--pages/branch/order-monitor/order-monitor.wxml-->
+<view class="order-monitor-container">
+  <!-- 标签页 -->
+  <scroll-view class="tabs" scroll-x>
+    <view 
+      class="tab-item {{currentTab === index ? 'active' : ''}}" 
+      wx:for="{{tabs}}" 
+      wx:key="index"
+      data-index="{{index}}"
+      bindtap="onTabChange">
+      {{item}}
+    </view>
+  </scroll-view>
+
+  <!-- 订单列表 -->
+  <view class="order-list" wx:if="{{orders.length > 0}}">
+    <view class="order-card" wx:for="{{orders}}" wx:key="id">
+      <view class="order-header">
+        <view class="shop-info">
+          <text class="shop-name">{{item.shopName}}</text>
+          <text class="order-time">{{item.createdAt}}</text>
+        </view>
+        <view class="status-tag status-{{item.status}}">
+          {{statusMap[item.status] || item.status}}
+        </view>
+      </view>
+      
+      <view class="order-body">
+        <view class="order-items">
+          <text class="items-text" wx:for="{{item.items}}" wx:for-item="orderItem" wx:key="id">
+            {{orderItem.productName}} x{{orderItem.quantity}}{{orderItem.unit}}
+          </text>
+        </view>
+        <view class="order-info">
+          <view class="info-row">
+            <text class="info-label">订单编号：</text>
+            <text class="info-value">{{item.orderNo}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">收货日期：</text>
+            <text class="info-value">{{item.deliveryDate}}</text>
+          </view>
+          <view class="info-row" wx:if="{{item.driverName}}">
+            <text class="info-label">配送司机：</text>
+            <text class="info-value">{{item.driverName}}</text>
+          </view>
+        </view>
+        <view class="order-total">
+          <text class="total-label">订单金额：</text>
+          <text class="total-amount">¥{{item.totalAmount}}</text>
+        </view>
+      </view>
+      
+      <view class="order-footer">
+        <view class="btn-detail" bindtap="goToDetail" data-id="{{item.id}}">
+          <text>查看详情</text>
+        </view>
+        <view class="btn-assign" wx:if="{{item.status === 'PENDING_ASSIGN'}}" bindtap="showAssignDriver" data-id="{{item.id}}">
+          <text>分配司机</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && orders.length === 0}}">
+    <text class="empty-text">暂无订单数据</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore && orders.length > 0}}">
+    <text bindtap="loadMore">加载更多</text>
+  </view>
+
+  <!-- 分配司机弹窗 -->
+  <view class="modal-mask" wx:if="{{showAssignModal}}" bindtap="hideAssignModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">分配司机</text>
+        <text class="modal-close" bindtap="hideAssignModal">×</text>
+      </view>
+      <view class="modal-body">
+        <picker mode="selector" range="{{drivers}}" range-key="name" bindchange="onDriverChange">
+          <view class="picker-box">
+            <text class="picker-label">选择司机：</text>
+            <text class="picker-value">{{selectedDriverName || '请选择司机'}}</text>
+            <text class="picker-arrow">></text>
+          </view>
+        </picker>
+        <view class="driver-list" wx:if="{{drivers.length > 0}}">
+          <view class="driver-item" wx:for="{{drivers}}" wx:key="id">
+            <text class="driver-name">{{item.name}}</text>
+            <text class="driver-phone">{{item.phone}}</text>
+          </view>
+        </view>
+        <view class="no-driver" wx:else>
+          <text>暂无可用司机</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <view class="btn-cancel" bindtap="hideAssignModal">取消</view>
+        <view class="btn-confirm" bindtap="confirmAssign">确认分配</view>
+      </view>
+    </view>
+  </view>
+</view>

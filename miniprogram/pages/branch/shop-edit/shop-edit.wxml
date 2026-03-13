@@ -1,0 +1,87 @@
+<!--pages/branch/shop-edit/shop-edit.wxml-->
+<view class="shop-edit-container">
+  <!-- 表单 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">店铺名称</text>
+      <input class="form-input" placeholder="请输入店铺名称" value="{{name}}" bindinput="onNameInput" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">地址</text>
+      <input class="form-input" placeholder="请输入地址" value="{{address}}" bindinput="onAddressInput" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">手机号</text>
+      <input class="form-input" type="number" placeholder="请输入手机号" value="{{phone}}" bindinput="onPhoneInput" maxlength="11" />
+    </view>
+    
+    <view class="form-item" wx:if="{{mode === 'add'}}">
+      <text class="form-label">密码</text>
+      <input class="form-input" password placeholder="请输入密码" value="{{password}}" bindinput="onPasswordInput" />
+    </view>
+  </view>
+
+  <!-- 设置选项（编辑模式显示） -->
+  <view class="settings-section" wx:if="{{mode === 'edit'}}">
+    <view class="section-title">店铺设置</view>
+    
+    <view class="setting-item">
+      <view class="setting-left">
+        <text class="setting-title">显示单价</text>
+        <text class="setting-desc">开启后店铺下单时可看到商品单价</text>
+      </view>
+      <switch checked="{{showPrice === 1}}" color="#52c41a" bindchange="onShowPriceChange" />
+    </view>
+    
+    <view class="setting-item">
+      <view class="setting-left">
+        <text class="setting-title">价格体系</text>
+        <text class="setting-desc">选择该店铺使用的价格类型</text>
+      </view>
+      <picker mode="selector" range="{{priceTypes}}" range-key="label" value="{{priceTypeIndex}}" bindchange="onPriceTypeChange">
+        <view class="picker-value">
+          {{priceTypes[priceTypeIndex].label}}
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+    
+    <view class="setting-item">
+      <view class="setting-left">
+        <text class="setting-title">账号状态</text>
+        <text class="setting-desc">禁用后店铺无法登录</text>
+      </view>
+      <switch checked="{{status === 1}}" color="#52c41a" bindchange="onStatusChange" />
+    </view>
+  </view>
+
+  <!-- 统计信息（查看模式显示） -->
+  <view class="stats-section" wx:if="{{mode === 'view'}}">
+    <view class="section-title">统计信息</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{detail.orderCount || 0}}</text>
+        <text class="stat-label">订单数量</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{detail.totalAmount || '0.00'}}</text>
+        <text class="stat-label">累计金额</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="btn-section">
+    <view class="btn btn-primary" bindtap="handleSubmit" wx:if="{{mode !== 'view'}}">
+      <text>{{mode === 'add' ? '创建店铺' : '保存修改'}}</text>
+    </view>
+    <view class="btn btn-danger" wx:if="{{mode === 'edit'}}" bindtap="handleDelete">
+      <text>删除店铺</text>
+    </view>
+    <view class="btn btn-default" wx:if="{{mode === 'view'}}" bindtap="switchToEdit">
+      <text>编辑店铺</text>
+    </view>
+  </view>
+</view>

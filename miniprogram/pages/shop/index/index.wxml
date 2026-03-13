@@ -1,0 +1,90 @@
+<!-- pages/shop/index/index.wxml -->
+<view class="shop-container">
+    <!-- 顶部区域 -->
+    <view class="header-section">
+        <view class="header-bar">
+            <view class="shop-info">
+                <text class="shop-name">{{shopInfo.name || '商品'}}</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 分类导航 -->
+    <scroll-view class="category-nav" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="category-item {{currentCategory === '' ? 'active' : ''}}" 
+              bindtap="onCategoryChange" data-category="">
+            <text class="category-text">全部</text>
+        </view>
+        <view class="category-item {{currentCategory === item ? 'active' : ''}}" 
+              wx:for="{{categories}}" wx:key="*this"
+              bindtap="onCategoryChange" data-category="{{item}}">
+            <text class="category-text">{{item}}</text>
+        </view>
+    </scroll-view>
+
+    <!-- 商品列表 -->
+    <scroll-view class="product-list" scroll-y enhanced bindscrolltolower="loadMore">
+        <!-- 商品网格 -->
+        <view class="product-grid">
+            <view class="product-card" wx:for="{{products}}" wx:key="id">
+                <image class="product-image" 
+                       src="{{item.imageUrl ? baseUrl + item.imageUrl : '/assets/images/default-product.png'}}" 
+                       mode="aspectFill"
+                       lazy-load></image>
+                <view class="product-info">
+                    <text class="product-name">{{item.name}}</text>
+                    <view class="product-meta">
+                        <text class="product-price">¥{{item.displayPrice || item.newPrice}}</text>
+                        <text class="product-unit">/{{item.unit}}</text>
+                    </view>
+                </view>
+                <view class="product-action">
+                    <view class="quantity-control" wx:if="{{item.quantity > 0}}">
+                        <view class="btn-minus" bindtap="onMinus" data-id="{{item.id}}">-</view>
+                        <text class="quantity-text">{{item.quantity}}</text>
+                        <view class="btn-plus" bindtap="onPlus" data-id="{{item.id}}">+</view>
+                    </view>
+                    <view class="btn-add" wx:else bindtap="onPlus" data-id="{{item.id}}">
+                        <text class="add-icon">+</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+        
+        <!-- 空状态 -->
+        <view class="empty" wx:if="{{products.length === 0 && !loading}}">
+            <text class="empty-icon">📦</text>
+            <text class="empty-text">暂无商品</text>
+        </view>
+        
+        <!-- 加载状态 -->
+        <view class="loading" wx:if="{{loading}}">
+            <view class="loading-spinner"></view>
+            <text>加载中...</text>
+        </view>
+        
+        <view class="no-more" wx:if="{{!hasMore && products.length > 0 && !loading}}">
+            <text>— 已经到底了 —</text>
+        </view>
+        
+        <!-- 底部占位 -->
+        <view class="bottom-placeholder"></view>
+    </scroll-view>
+
+    <!-- 底部购物车栏 -->
+    <view class="cart-bar" wx:if="{{totalCount > 0}}">
+        <view class="cart-info">
+            <view class="cart-icon-wrapper">
+                <text class="cart-icon">🛒</text>
+            </view>
+            <view class="cart-amount-info">
+                <text class="cart-label">合计</text>
+                <text class="cart-amount">¥{{totalAmount}}</text>
+            </view>
+        </view>
+        <button class="btn-preview" bindtap="goToPreview">去结算({{totalCount}})</button>
+    </view>
+    
+    <!-- 底部导航栏 -->
+    <tab-bar current="{{0}}" />
+</view>

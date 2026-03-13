@@ -1,0 +1,13 @@
+<!-- components/tab-bar/index.wxml -->
+<view class="tab-bar">
+    <view 
+        class="tab-item {{index === current ? 'active' : ''}}" 
+        wx:for="{{list}}" 
+        wx:key="text"
+        data-page="{{item.page}}"
+        data-index="{{index}}"
+        bindtap="onSwitch">
+        <text class="tab-icon">{{item.icon}}</text>
+        <text class="tab-text">{{item.text}}</text>
+    </view>
+</view>

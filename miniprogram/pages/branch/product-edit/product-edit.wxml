@@ -1,0 +1,76 @@
+<!--pages/branch/product-edit/product-edit.wxml-->
+<view class="product-edit-container">
+  <!-- 商品图片 -->
+  <view class="image-section">
+    <view class="image-box" bindtap="chooseImage">
+      <image wx:if="{{imageUrl}}" src="{{imageUrl}}" mode="aspectFill" class="product-image" />
+      <view wx:else class="image-placeholder">
+        <text class="placeholder-icon">+</text>
+        <text class="placeholder-text">上传商品图片</text>
+      </view>
+    </view>
+    <text class="image-tip">点击上传商品图片</text>
+  </view>
+
+  <!-- 表单 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">商品名称</text>
+      <input class="form-input" placeholder="请输入商品名称" value="{{name}}" bindinput="onNameInput" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">商品类别</text>
+      <picker mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="form-picker">
+          <text class="{{category ? 'picker-value' : 'picker-placeholder'}}">{{category || '请选择类别'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">老用户价格</text>
+      <view class="price-input-box">
+        <input class="form-input price-input" type="digit" placeholder="请输入价格" value="{{oldPrice}}" bindinput="onOldPriceInput" />
+        <text class="price-unit">元/{{unit}}</text>
+      </view>
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">新用户价格</text>
+      <view class="price-input-box">
+        <input class="form-input price-input" type="digit" placeholder="请输入价格" value="{{newPrice}}" bindinput="onNewPriceInput" />
+        <text class="price-unit">元/{{unit}}</text>
+      </view>
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">单位</text>
+      <picker mode="selector" range="{{units}}" value="{{unitIndex}}" bindchange="onUnitChange">
+        <view class="form-picker">
+          <text class="picker-value">{{unit}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-item form-item-textarea">
+      <text class="form-label">商品说明</text>
+      <textarea class="form-textarea" placeholder="请输入商品说明（选填）" value="{{description}}" bindinput="onDescriptionInput" maxlength="200" />
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="btn-section">
+    <view class="btn btn-primary" bindtap="handleSubmit" wx:if="{{mode !== 'view'}}">
+      <text>{{mode === 'add' ? '创建商品' : '保存修改'}}</text>
+    </view>
+    <view class="btn btn-danger" wx:if="{{mode === 'edit'}}" bindtap="handleDelete">
+      <text>删除商品</text>
+    </view>
+    <view class="btn btn-default" wx:if="{{mode === 'view'}}" bindtap="switchToEdit">
+      <text>编辑商品</text>
+    </view>
+  </view>
+</view>

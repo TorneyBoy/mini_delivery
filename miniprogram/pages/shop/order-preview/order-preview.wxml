@@ -1,0 +1,56 @@
+<!-- pages/shop/order-preview/order-preview.wxml -->
+<view class="preview-container">
+    <!-- 商品列表 -->
+    <view class="section">
+        <view class="section-title">商品清单</view>
+        <view class="product-list">
+            <view class="product-item" wx:for="{{orderItems}}" wx:key="productId">
+                <view class="product-info">
+                    <text class="product-name">{{item.productName}}</text>
+                    <text class="product-price">¥{{item.unitPrice}}/{{item.unit}}</text>
+                </view>
+                <view class="product-actions">
+                    <view class="quantity-control">
+                        <view class="btn-minus" bindtap="onQuantityChange" data-index="{{index}}" data-type="minus">-</view>
+                        <text class="quantity">{{item.quantity}}</text>
+                        <view class="btn-plus" bindtap="onQuantityChange" data-index="{{index}}" data-type="plus">+</view>
+                    </view>
+                    <view class="item-total">¥{{item.quantity * item.unitPrice}}</view>
+                    <view class="btn-remove" bindtap="onRemoveItem" data-index="{{index}}">删除</view>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 收货日期 -->
+    <view class="section">
+        <view class="section-title">收货日期</view>
+        <picker mode="selector" range="{{dateRange}}" range-key="label" bindchange="onDateChange">
+            <view class="date-picker">
+                <text class="date-value">{{dateRange[0].label}}</text>
+                <text class="date-arrow">▼</text>
+            </view>
+        </picker>
+    </view>
+
+    <!-- 备注 -->
+    <view class="section">
+        <view class="section-title">订单备注</view>
+        <textarea 
+            class="remark-input" 
+            placeholder="请输入备注信息（选填）" 
+            value="{{remark}}"
+            bindinput="onRemarkInput"
+            maxlength="200"
+        />
+    </view>
+
+    <!-- 底部结算栏 -->
+    <view class="bottom-bar">
+        <view class="amount-info">
+            <text class="amount-label">合计:</text>
+            <text class="amount-value">¥{{totalAmount}}</text>
+        </view>
+        <button class="btn-submit" bindtap="onSubmit" loading="{{loading}}">提交订单</button>
+    </view>
+</view>

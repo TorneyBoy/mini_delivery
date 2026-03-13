@@ -1,0 +1,181 @@
+/* pages/branch/shop-list/shop-list.wxss */
+.shop-list-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 120rpx;
+}
+
+/* 搜索栏 */
+.search-bar {
+  display: flex;
+  padding: 20rpx 30rpx;
+  background-color: #ffffff;
+  gap: 20rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 70rpx;
+  padding: 0 20rpx;
+  background-color: #f5f5f5;
+  border-radius: 35rpx;
+  font-size: 28rpx;
+}
+
+.search-btn {
+  width: 140rpx;
+  height: 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #52c41a;
+  border-radius: 35rpx;
+  color: #ffffff;
+  font-size: 28rpx;
+}
+
+/* 列表 */
+.shop-list {
+  padding: 20rpx 30rpx;
+}
+
+.shop-card {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.shop-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.status-tag {
+  padding: 8rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+.status-tag.active {
+  background-color: #f6ffed;
+  color: #52c41a;
+}
+
+.status-tag.inactive {
+  background-color: #fff2f0;
+  color: #ff4d4f;
+}
+
+.card-body {
+  padding: 20rpx 30rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.card-footer {
+  display: flex;
+  padding: 20rpx 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+  gap: 20rpx;
+}
+
+.btn-detail, .btn-edit {
+  flex: 1;
+  height: 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 35rpx;
+}
+
+.btn-detail {
+  background-color: #f0f0f0;
+}
+
+.btn-detail text {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.btn-edit {
+  background-color: #52c41a;
+}
+
+.btn-edit text {
+  font-size: 28rpx;
+  color: #ffffff;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100rpx 0;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+/* 加载更多 */
+.load-more {
+  display: flex;
+  justify-content: center;
+  padding: 30rpx 0;
+}
+
+.load-more text {
+  font-size: 28rpx;
+  color: #52c41a;
+}
+
+/* 底部添加按钮 */
+.add-btn {
+  position: fixed;
+  bottom: 40rpx;
+  left: 30rpx;
+  right: 30rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #52c41a;
+  border-radius: 44rpx;
+  box-shadow: 0 8rpx 20rpx rgba(82, 196, 26, 0.3);
+}
+
+.add-btn text {
+  font-size: 32rpx;
+  color: #ffffff;
+}

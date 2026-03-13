@@ -1,0 +1,36 @@
+{
+    "pages": [
+        "pages/login/login",
+        "pages/admin/index/index",
+        "pages/admin/branch-list/branch-list",
+        "pages/admin/branch-detail/branch-detail",
+        "pages/admin/statistics/statistics",
+        "pages/branch/index/index",
+        "pages/branch/shop-list/shop-list",
+        "pages/branch/shop-edit/shop-edit",
+        "pages/branch/driver-list/driver-list",
+        "pages/branch/driver-edit/driver-edit",
+        "pages/branch/product-list/product-list",
+        "pages/branch/product-edit/product-edit",
+        "pages/branch/order-monitor/order-monitor",
+        "pages/shop/index/index",
+        "pages/shop/order-list/order-list",
+        "pages/shop/bill-list/bill-list",
+        "pages/shop/cart/cart",
+        "pages/shop/order-preview/order-preview",
+        "pages/shop/order-detail/order-detail",
+        "pages/shop/bill-detail/bill-detail",
+        "pages/shop/profile/profile",
+        "pages/driver/pending/pending",
+        "pages/driver/picking/picking",
+        "pages/driver/delivery/delivery"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#1890ff",
+        "navigationBarTitleText": "配送管理系统",
+        "navigationBarTextStyle": "white"
+    },
+    "style": "v2",
+    "sitemapLocation": "sitemap.json"
+}

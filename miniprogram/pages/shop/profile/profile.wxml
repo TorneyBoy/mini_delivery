@@ -1,0 +1,62 @@
+<!-- pages/shop/profile/profile.wxml -->
+<view class="profile-container">
+    <!-- 店铺信息卡片 -->
+    <view class="shop-card">
+        <view class="shop-header">
+            <view class="shop-avatar">
+                <text class="avatar-text">{{shopInfo.name ? shopInfo.name[0] : '店'}}</text>
+            </view>
+            <view class="shop-info">
+                <text class="shop-name">{{shopInfo.name || '加载中...'}}</text>
+                <text class="shop-phone">{{shopInfo.phone || ''}}</text>
+            </view>
+        </view>
+        <view class="shop-address">
+            <text class="address-icon">📍</text>
+            <text class="address-text">{{shopInfo.address || ''}}</text>
+        </view>
+    </view>
+
+    <!-- 数据统计 -->
+    <view class="stats-section">
+        <view class="section-title">数据概览</view>
+        <view class="stats-grid">
+            <view class="stat-item">
+                <text class="stat-value">{{statistics.totalOrders}}</text>
+                <text class="stat-label">总订单</text>
+            </view>
+            <view class="stat-item">
+                <text class="stat-value">{{statistics.completedOrders}}</text>
+                <text class="stat-label">已完成</text>
+            </view>
+            <view class="stat-item">
+                <text class="stat-value">{{statistics.pendingBills}}</text>
+                <text class="stat-label">待付款</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 功能菜单 -->
+    <view class="menu-section">
+        <view class="section-title">功能菜单</view>
+        <view class="menu-list">
+            <view class="menu-item" wx:for="{{menuList}}" wx:key="title" 
+                  data-page="{{item.page}}" bindtap="goToPage">
+                <text class="menu-icon">{{item.icon}}</text>
+                <view class="menu-content">
+                    <text class="menu-title">{{item.title}}</text>
+                    <text class="menu-desc">{{item.desc}}</text>
+                </view>
+                <text class="menu-arrow">›</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 退出登录 -->
+    <view class="logout-section">
+        <button class="btn-logout" bindtap="onLogout">退出登录</button>
+    </view>
+
+    <!-- 底部导航栏 -->
+    <tab-bar current="{{3}}" />
+</view>

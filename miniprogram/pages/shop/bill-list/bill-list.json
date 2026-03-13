@@ -1,0 +1,7 @@
+{
+    "usingComponents": {
+        "tab-bar": "/components/tab-bar/index"
+    },
+    "navigationBarTitleText": "账单",
+    "enablePullDownRefresh": true
+}

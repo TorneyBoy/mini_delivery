@@ -1,0 +1,132 @@
+<!--pages/admin/statistics/statistics.wxml-->
+<view class="statistics-container">
+  <!-- 概览卡片 -->
+  <view class="overview-section">
+    <view class="section-title">数据概览</view>
+    <view class="overview-grid">
+      <view class="overview-item">
+        <text class="overview-value">{{statistics.branchManagerCount || 0}}</text>
+        <text class="overview-label">分管理数量</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-value">{{statistics.shopCount || 0}}</text>
+        <text class="overview-label">店铺总数</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-value">{{statistics.driverCount || 0}}</text>
+        <text class="overview-label">司机总数</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-value">{{statistics.productCount || 0}}</text>
+        <text class="overview-label">商品总数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 订单统计 -->
+  <view class="stats-section">
+    <view class="section-title">订单统计</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #e6f7ff;">
+          <text>📋</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{orderStats.total || 0}}</text>
+          <text class="stats-label">订单总数</text>
+        </view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #fff7e6;">
+          <text>⏳</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{orderStats.pending || 0}}</text>
+          <text class="stats-label">待处理</text>
+        </view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #f6ffed;">
+          <text>✅</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{orderStats.completed || 0}}</text>
+          <text class="stats-label">已完成</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 账单统计 -->
+  <view class="stats-section">
+    <view class="section-title">账单统计</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #fff0f6;">
+          <text>💰</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{billStats.total || 0}}</text>
+          <text class="stats-label">账单总数</text>
+        </view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #f9f0ff;">
+          <text>💵</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">¥{{billStats.totalAmount || '0.00'}}</text>
+          <text class="stats-label">总金额</text>
+        </view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #e6fffb;">
+          <text>📊</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{billStats.paid || 0}}</text>
+          <text class="stats-label">已支付</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 配送统计 -->
+  <view class="stats-section">
+    <view class="section-title">配送统计</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #e6f7ff;">
+          <text>🚚</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{deliveryStats.picking || 0}}</text>
+          <text class="stats-label">拣货中</text>
+        </view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #fff7e6;">
+          <text>🚛</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{deliveryStats.delivering || 0}}</text>
+          <text class="stats-label">配送中</text>
+        </view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-icon" style="background-color: #f6ffed;">
+          <text>📦</text>
+        </view>
+        <view class="stats-info">
+          <text class="stats-value">{{deliveryStats.delivered || 0}}</text>
+          <text class="stats-label">已送达</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 刷新按钮 -->
+  <view class="refresh-btn" bindtap="loadData">
+    <text>刷新数据</text>
+  </view>
+</view>
