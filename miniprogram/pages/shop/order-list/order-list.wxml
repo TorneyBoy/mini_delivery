@@ -36,11 +36,16 @@
                         <text class="order-amount">合计: <text class="amount">¥{{item.totalAmount}}</text></text>
                     </view>
                     <view class="order-actions">
-                        <button 
-                            class="btn-receive" 
+                        <button
+                            class="btn-receive"
                             wx:if="{{item.status === 3}}"
-                            data-id="{{item.id}}" 
+                            data-id="{{item.id}}"
                             catchtap="onConfirmReceive">确认收货</button>
+                        <button
+                            class="btn-edit"
+                            wx:if="{{item.status < 4 && (item.deliveryDate > today || (item.deliveryDate === today && hour < 2))}}"
+                            data-id="{{item.id}}"
+                            catchtap="goToEdit">修改</button>
                         <button class="btn-detail" data-id="{{item.id}}" catchtap="goToDetail">详情</button>
                     </view>
                 </view>

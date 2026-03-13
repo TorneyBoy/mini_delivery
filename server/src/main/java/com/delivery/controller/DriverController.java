@@ -1,7 +1,10 @@
 package com.delivery.controller;
 
 import com.delivery.common.Result;
+import com.delivery.dto.response.DeliveryHistoryResponse;
 import com.delivery.dto.response.DeliveryListResponse;
+import com.delivery.dto.response.DriverResponse;
+import com.delivery.dto.response.DriverStatisticsResponse;
 import com.delivery.dto.response.OrderResponse;
 import com.delivery.dto.response.PickingListResponse;
 import com.delivery.security.UserPrincipal;
@@ -27,6 +30,16 @@ import java.util.List;
 public class DriverController {
 
     private final DriverService driverService;
+
+    // ==================== 个人信息 ====================
+
+    @Operation(summary = "获取司机信息", description = "获取当前登录司机的个人信息")
+    @GetMapping("/info")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<DriverResponse> getDriverInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        DriverResponse driverInfo = driverService.getDriverInfo(userPrincipal.getId());
+        return Result.success(driverInfo);
+    }
 
     // ==================== 待分配订单 ====================
 
@@ -55,6 +68,24 @@ public class DriverController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody List<Long> orderIds) {
         driverService.deselectOrders(userPrincipal.getId(), orderIds);
+        return Result.success();
+    }
+
+    @Operation(summary = "获取已选择的订单列表", description = "获取司机已选择待拣货的订单")
+    @GetMapping("/selected-orders")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<List<OrderResponse>> getSelectedOrders(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<OrderResponse> orders = driverService.getSelectedOrders(userPrincipal.getId());
+        return Result.success(orders);
+    }
+
+    @Operation(summary = "删除已选择的订单", description = "从已选订单中删除指定订单")
+    @DeleteMapping("/selected-orders/{orderId}")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<Void> removeSelectedOrder(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long orderId) {
+        driverService.removeSelectedOrder(userPrincipal.getId(), orderId);
         return Result.success();
     }
 
@@ -96,5 +127,24 @@ public class DriverController {
             @PathVariable Long id) {
         driverService.completeDelivery(userPrincipal.getId(), id);
         return Result.success();
+    }
+
+    // ==================== 个人中心 ====================
+
+    @Operation(summary = "获取司机统计数据", description = "获取司机的送货统计数据")
+    @GetMapping("/statistics")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<DriverStatisticsResponse> getStatistics(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        DriverStatisticsResponse statistics = driverService.getStatistics(userPrincipal.getId());
+        return Result.success(statistics);
+    }
+
+    @Operation(summary = "获取送货历史记录", description = "获取司机的历史送货记录")
+    @GetMapping("/delivery-history")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<List<DeliveryHistoryResponse>> getDeliveryHistory(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<DeliveryHistoryResponse> history = driverService.getDeliveryHistory(userPrincipal.getId());
+        return Result.success(history);
     }
 }

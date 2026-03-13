@@ -14,6 +14,8 @@ Page({
     size: 10,
     hasMore: true,
     loading: false,
+    today: '',
+    hour: 0,
     statusMap: {
       0: { text: '待支付', class: 'status-pending' },
       1: { text: '待分配', class: 'status-waiting' },
@@ -24,6 +26,12 @@ Page({
   },
 
   onLoad() {
+    // 初始化日期和时间
+    const now = new Date();
+    this.setData({
+      today: now.toISOString().split('T')[0],
+      hour: now.getHours()
+    });
     this.loadOrders(true);
   },
 
@@ -105,6 +113,32 @@ Page({
   goToDetail(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/shop/order-detail/order-detail?id=${id}` });
+  },
+
+  // 修改订单
+  goToEdit(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.navigateTo({ url: `/pages/shop/order-edit/order-edit?id=${id}` });
+  },
+
+  // 检查订单是否可修改
+  canModifyOrder(order) {
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const hour = now.getHours();
+    const deliveryDate = order.deliveryDate;
+
+    // 预定订单（收货日期在今天之后）：可修改
+    if (deliveryDate > today) {
+      return true;
+    }
+
+    // 今日订单：凌晨2点前可修改
+    if (deliveryDate === today && hour < 2) {
+      return true;
+    }
+
+    return false;
   },
 
   // 确认收货

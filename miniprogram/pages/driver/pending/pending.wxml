@@ -1,2 +1,108 @@
-<!--pages/driver/pending/pending.wxml-->
-<text>pages/driver/pending/pending.wxml</text>
+<!-- pages/driver/pending/pending.wxml -->
+<view class="pending-container">
+    <!-- 顶部标题栏 -->
+    <view class="header-section">
+        <view class="header-bar">
+            <text class="header-title">待分配订单</text>
+            <text class="header-count">{{orders.length}} 单</text>
+        </view>
+    </view>
+
+    <!-- 操作栏 -->
+    <view class="action-bar" wx:if="{{orders.length > 0}}">
+        <view class="select-all" bindtap="onSelectAll">
+            <view class="checkbox {{selectedOrders.length === orders.length ? 'checked' : ''}}">
+                <text class="check-icon" wx:if="{{selectedOrders.length === orders.length}}">✓</text>
+            </view>
+            <text class="select-text">全选</text>
+        </view>
+        <view class="selected-info">
+            <text class="selected-count">已选 {{selectedOrders.length}} 单</text>
+        </view>
+    </view>
+
+    <!-- 订单列表 -->
+    <scroll-view class="order-list" scroll-y enhanced>
+        <view class="order-card {{item.selected ? 'selected' : ''}}" 
+              wx:for="{{orders}}" 
+              wx:key="id"
+              bindtap="onToggleSelect"
+              data-id="{{item.id}}">
+            <!-- 选择框 -->
+            <view class="checkbox-wrapper">
+                <view class="checkbox {{item.selected ? 'checked' : ''}}">
+                    <text class="check-icon" wx:if="{{item.selected}}">✓</text>
+                </view>
+            </view>
+            
+            <!-- 订单内容 -->
+            <view class="order-content">
+                <view class="order-header">
+                    <view class="shop-info">
+                        <text class="shop-name">{{item.shopName || '店铺'}}</text>
+                        <text class="order-no">{{item.orderNo}}</text>
+                    </view>
+                    <view class="order-amount">
+                        <text class="amount-label">合计</text>
+                        <text class="amount-value">¥{{item.totalAmount}}</text>
+                    </view>
+                </view>
+                
+                <view class="order-body">
+                    <view class="info-row">
+                        <text class="info-icon">📍</text>
+                        <text class="info-text">{{item.shopAddress || '暂无地址'}}</text>
+                    </view>
+                    <view class="info-row">
+                        <text class="info-icon">📦</text>
+                        <text class="info-text goods-text">{{item.itemsText}}</text>
+                    </view>
+                    <view class="info-row">
+                        <text class="info-icon">📅</text>
+                        <text class="info-text">收货日期：{{item.deliveryDate}}</text>
+                    </view>
+                </view>
+                
+                <view class="order-footer">
+                    <view class="btn-detail" catchtap="onViewDetail" data-order="{{item}}">
+                        <text>查看详情</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{orders.length === 0 && !loading}}">
+            <text class="empty-icon">📋</text>
+            <text class="empty-text">暂无待分配订单</text>
+            <text class="empty-tip">下拉刷新获取最新订单</text>
+        </view>
+
+        <!-- 加载状态 -->
+        <view class="loading-state" wx:if="{{loading}}">
+            <view class="loading-spinner"></view>
+            <text>加载中...</text>
+        </view>
+
+        <!-- 底部占位 -->
+        <view class="bottom-placeholder"></view>
+    </scroll-view>
+
+    <!-- 底部确认栏 -->
+    <view class="confirm-bar" wx:if="{{selectedOrders.length > 0}}">
+        <view class="confirm-info">
+            <text class="confirm-label">已选择</text>
+            <text class="confirm-count">{{selectedOrders.length}}</text>
+            <text class="confirm-label">个订单</text>
+        </view>
+        <button class="btn-confirm {{submitting ? 'disabled' : ''}}" 
+                bindtap="onConfirmSelect"
+                disabled="{{submitting}}">
+            <text wx:if="{{submitting}}">处理中...</text>
+            <text wx:else>确认选择</text>
+        </button>
+    </view>
+
+    <!-- 底部导航栏 -->
+    <driver-tab-bar current="{{0}}" pendingCount="{{orders.length}}" />
+</view>

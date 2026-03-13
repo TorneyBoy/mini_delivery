@@ -1,2 +1,117 @@
-<!--pages/driver/delivery/delivery.wxml-->
-<text>pages/driver/delivery/delivery.wxml</text>
+<!-- pages/driver/delivery/delivery.wxml -->
+<view class="delivery-container">
+    <!-- 顶部标题栏 -->
+    <view class="header-section">
+        <view class="header-bar">
+            <text class="header-title">待送货清单</text>
+            <view class="count-badge" wx:if="{{deliveryList.length > 0}}">
+                <text class="count-text">{{deliveryList.length}} 单</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 送货清单 -->
+    <scroll-view class="delivery-list" scroll-y enhanced>
+        <view class="delivery-card" wx:for="{{deliveryList}}" wx:key="id">
+            <!-- 店铺信息 -->
+            <view class="shop-header">
+                <view class="shop-info">
+                    <text class="shop-name">{{item.shopName}}</text>
+                    <text class="shop-phone">{{item.shopPhone}}</text>
+                </view>
+                <view class="shop-actions">
+                    <view class="action-btn call" catchtap="onCallPhone" data-phone="{{item.shopPhone}}">
+                        <text class="action-icon">📞</text>
+                        <text class="action-text">拨打电话</text>
+                    </view>
+                </view>
+            </view>
+
+            <!-- 地址信息 -->
+            <view class="address-section" bindtap="onOpenMap" data-address="{{item.shopAddress}}" data-name="{{item.shopName}}">
+                <view class="address-icon">📍</view>
+                <view class="address-content">
+                    <text class="address-text">{{item.shopAddress}}</text>
+                    <text class="address-tip">点击导航</text>
+                </view>
+                <view class="address-arrow">›</view>
+            </view>
+
+            <!-- 商品汇总 -->
+            <view class="goods-section">
+                <view class="goods-header">
+                    <text class="goods-title">商品清单</text>
+                    <view class="btn-detail" catchtap="onViewDetail" data-delivery="{{item}}">
+                        <text>查看详情</text>
+                    </view>
+                </view>
+                <view class="goods-list">
+                    <view class="goods-item" wx:for="{{item.items}}" wx:for-item="goods" wx:key="*this">
+                        <text class="goods-name">{{goods.productName}}</text>
+                        <text class="goods-quantity">{{goods.quantity}}{{goods.unit || '斤'}}</text>
+                    </view>
+                </view>
+            </view>
+
+            <!-- 操作按钮 -->
+            <view class="card-footer">
+                <button class="btn-complete" catchtap="onCompleteDelivery" data-id="{{item.id}}" data-name="{{item.shopName}}">
+                    <text class="btn-icon">✓</text>
+                    <text>确认送达</text>
+                </button>
+            </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{deliveryList.length === 0 && !loading}}">
+            <text class="empty-icon">🚚</text>
+            <text class="empty-text">暂无送货任务</text>
+            <text class="empty-tip">完成拣货后将自动生成送货清单</text>
+        </view>
+
+        <!-- 加载状态 -->
+        <view class="loading-state" wx:if="{{loading}}">
+            <view class="loading-spinner"></view>
+            <text>加载中...</text>
+        </view>
+
+        <!-- 底部占位 -->
+        <view class="bottom-placeholder"></view>
+    </scroll-view>
+
+    <!-- 详情弹窗 -->
+    <view class="detail-modal {{showDetail ? 'show' : ''}}" catchtap="onCloseDetail">
+        <view class="detail-content" catchtap="stopPropagation">
+            <view class="detail-header">
+                <text class="detail-title">送货详情</text>
+                <view class="close-btn" catchtap="onCloseDetail">×</view>
+            </view>
+            <view class="detail-body" wx:if="{{currentDelivery}}">
+                <view class="detail-shop">
+                    <text class="detail-shop-name">{{currentDelivery.shopName}}</text>
+                    <text class="detail-shop-address">{{currentDelivery.shopAddress}}</text>
+                </view>
+                <view class="detail-goods">
+                    <text class="detail-goods-title">商品清单</text>
+                    <view class="detail-goods-list">
+                        <view class="detail-goods-item" wx:for="{{currentDelivery.items}}" wx:key="*this">
+                            <text class="detail-goods-name">{{item.productName}}</text>
+                            <text class="detail-goods-quantity">{{item.quantity}}{{item.unit || '斤'}}</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="detail-footer">
+                <button class="btn-nav" catchtap="onOpenMap" data-address="{{currentDelivery.shopAddress}}" data-name="{{currentDelivery.shopName}}">
+                    <text>导航前往</text>
+                </button>
+                <button class="btn-confirm" catchtap="onCompleteDelivery" data-id="{{currentDelivery.id}}" data-name="{{currentDelivery.shopName}}">
+                    <text>确认送达</text>
+                </button>
+            </view>
+        </view>
+    </view>
+
+    <!-- 底部导航栏 -->
+    <driver-tab-bar current="{{2}}" deliveryCount="{{deliveryList.length}}" />
+</view>

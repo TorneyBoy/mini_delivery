@@ -75,6 +75,12 @@
             </view>
         </view>
 
+        <!-- 修改提示 -->
+        <view class="modify-tip" wx:if="{{canModify}}">
+            <text class="tip-text">⏰ {{modifyDeadline}}</text>
+            <button class="btn-modify" bindtap="goToEdit">修改订单</button>
+        </view>
+
         <!-- 底部操作 -->
         <view class="bottom-bar" wx:if="{{order.status === 3}}">
             <button class="btn-receive" bindtap="onConfirmReceive">确认收货</button>

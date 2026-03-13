@@ -215,3 +215,29 @@
     font-size: 32rpx;
     border-radius: 40rpx;
 }
+
+/* 修改提示 */
+.modify-tip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fffbe8;
+    margin: 20rpx;
+    padding: 24rpx 30rpx;
+    border-radius: 16rpx;
+    border: 1rpx solid #ffe58f;
+}
+
+.tip-text {
+    font-size: 28rpx;
+    color: #d48806;
+}
+
+.btn-modify {
+    background: linear-gradient(135deg, #1890ff, #096dd9);
+    color: #fff;
+    font-size: 28rpx;
+    padding: 16rpx 32rpx;
+    border-radius: 32rpx;
+    border: none;
+}

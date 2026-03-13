@@ -1,0 +1,7 @@
+{
+    "usingComponents": {
+        "driver-tab-bar": "/components/driver-tab-bar/index"
+    },
+    "navigationBarTitleText": "我的",
+    "enablePullDownRefresh": true
+}

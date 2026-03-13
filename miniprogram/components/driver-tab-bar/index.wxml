@@ -1,0 +1,18 @@
+<!-- components/driver-tab-bar/index.wxml -->
+<view class="tab-bar">
+    <view 
+        class="tab-item {{index === current ? 'active' : ''}}" 
+        wx:for="{{list}}" 
+        wx:key="text"
+        data-page="{{item.page}}"
+        data-index="{{index}}"
+        bindtap="onSwitch">
+        <view class="tab-icon-wrapper">
+            <text class="tab-icon">{{item.icon}}</text>
+            <view class="badge" wx:if="{{index === 0 && pendingCount > 0}}">{{pendingCount > 99 ? '99+' : pendingCount}}</view>
+            <view class="badge" wx:if="{{index === 1 && pickingCount > 0}}">{{pickingCount > 99 ? '99+' : pickingCount}}</view>
+            <view class="badge" wx:if="{{index === 2 && deliveryCount > 0}}">{{deliveryCount > 99 ? '99+' : deliveryCount}}</view>
+        </view>
+        <text class="tab-text">{{item.text}}</text>
+    </view>
+</view>

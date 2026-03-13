@@ -39,6 +39,12 @@ public class OrderResponse {
     @Schema(description = "店铺名称")
     private String shopName;
 
+    @Schema(description = "店铺地址")
+    private String shopAddress;
+
+    @Schema(description = "店铺电话")
+    private String shopPhone;
+
     @Schema(description = "司机ID")
     private Long driverId;
 

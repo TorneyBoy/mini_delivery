@@ -2,7 +2,10 @@ package com.delivery.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.delivery.common.ResultCode;
+import com.delivery.dto.response.DeliveryHistoryResponse;
 import com.delivery.dto.response.DeliveryListResponse;
+import com.delivery.dto.response.DriverResponse;
+import com.delivery.dto.response.DriverStatisticsResponse;
 import com.delivery.dto.response.OrderResponse;
 import com.delivery.dto.response.PickingListResponse;
 import com.delivery.entity.*;
@@ -36,16 +39,47 @@ public class DriverServiceImpl implements DriverService {
     private final DeliveryOrderMapper deliveryOrderMapper;
 
     @Override
+    public DriverResponse getDriverInfo(Long driverId) {
+        Driver driver = driverMapper.selectById(driverId);
+        if (driver == null) {
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        }
+
+        DriverResponse response = new DriverResponse();
+        response.setId(driver.getId());
+        response.setName(driver.getName());
+        response.setPhone(driver.getPhone());
+        response.setStatus(driver.getStatus());
+        response.setCreatedAt(driver.getCreatedAt());
+        return response;
+    }
+
+    @Override
     public List<OrderResponse> getPendingOrders(Long driverId) {
         Driver driver = driverMapper.selectById(driverId);
         if (driver == null) {
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
 
-        // 获取该司机所属分管理下所有待分配的订单
+        // 根据当前时间确定显示哪一天的订单
+        // 凌晨2点之前显示当天的订单，凌晨2点之后显示第二天的订单
+        LocalDateTime now = LocalDateTime.now();
+        int currentHour = now.getHour();
+
+        java.time.LocalDate targetDate;
+        if (currentHour < 2) {
+            // 凌晨0点-2点：显示当天的订单
+            targetDate = now.toLocalDate();
+        } else {
+            // 凌晨2点之后：显示第二天的订单
+            targetDate = now.toLocalDate().plusDays(1);
+        }
+
+        // 获取该司机所属分管理下所有待分配的订单，并按日期过滤
         List<Order> orders = orderMapper.selectList(
                 new LambdaQueryWrapper<Order>()
                         .eq(Order::getStatus, OrderStatus.PENDING_ASSIGNMENT.getCode())
+                        .eq(Order::getDeliveryDate, targetDate)
                         .exists("SELECT 1 FROM shop s WHERE s.id = `order`.shop_id AND s.branch_manager_id = {0}",
                                 driver.getBranchManagerId())
                         .orderByAsc(Order::getDeliveryDate));
@@ -57,7 +91,9 @@ public class DriverServiceImpl implements DriverService {
                     Shop shop = shopMapper.selectById(order.getShopId());
                     OrderResponse response = convertToOrderResponse(order, items, null);
                     if (shop != null) {
-                        response.setDriverName(shop.getName()); // 临时用driverName字段存储店铺名称
+                        response.setShopName(shop.getName());
+                        response.setShopAddress(shop.getAddress());
+                        response.setShopPhone(shop.getPhone());
                     }
                     return response;
                 })
@@ -97,6 +133,36 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    public List<OrderResponse> getSelectedOrders(Long driverId) {
+        Driver driver = driverMapper.selectById(driverId);
+        if (driver == null) {
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        }
+
+        // 获取该司机已选择待拣货的订单
+        List<Order> orders = orderMapper.selectList(
+                new LambdaQueryWrapper<Order>()
+                        .eq(Order::getDriverId, driverId)
+                        .eq(Order::getStatus, OrderStatus.PENDING_PICKUP.getCode())
+                        .orderByAsc(Order::getDeliveryDate));
+
+        return orders.stream()
+                .map(order -> {
+                    List<OrderItem> items = orderItemMapper.selectList(
+                            new LambdaQueryWrapper<OrderItem>().eq(OrderItem::getOrderId, order.getId()));
+                    Shop shop = shopMapper.selectById(order.getShopId());
+                    OrderResponse response = convertToOrderResponse(order, items, null);
+                    if (shop != null) {
+                        response.setShopName(shop.getName());
+                        response.setShopAddress(shop.getAddress());
+                        response.setShopPhone(shop.getPhone());
+                    }
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deselectOrders(Long driverId, List<Long> orderIds) {
         if (orderIds == null || orderIds.isEmpty()) {
@@ -117,6 +183,31 @@ public class DriverServiceImpl implements DriverService {
             // 从拣货清单中移除
             removeFromPickingList(driverId, orderId);
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeSelectedOrder(Long driverId, Long orderId) {
+        Order order = orderMapper.selectById(orderId);
+        if (order == null) {
+            throw new BusinessException(ResultCode.ORDER_NOT_FOUND);
+        }
+
+        if (!driverId.equals(order.getDriverId())) {
+            throw new BusinessException(ResultCode.FORBIDDEN, "无权操作此订单");
+        }
+
+        if (!order.getStatus().equals(OrderStatus.PENDING_PICKUP.getCode())) {
+            throw new BusinessException(ResultCode.ORDER_STATUS_ERROR, "订单状态不正确，无法删除");
+        }
+
+        // 取消分配
+        order.setDriverId(null);
+        order.setStatus(OrderStatus.PENDING_ASSIGNMENT.getCode());
+        orderMapper.updateById(order);
+
+        // 从拣货清单中移除
+        removeFromPickingList(driverId, orderId);
     }
 
     @Override
@@ -400,5 +491,101 @@ public class DriverServiceImpl implements DriverService {
 
         response.setItems(new ArrayList<>(itemMap.values()));
         return response;
+    }
+
+    @Override
+    public DriverStatisticsResponse getStatistics(Long driverId) {
+        DriverStatisticsResponse response = new DriverStatisticsResponse();
+
+        java.time.LocalDate today = java.time.LocalDate.now();
+
+        // 今日订单数
+        Long todayOrders = orderMapper.selectCount(
+                new LambdaQueryWrapper<Order>()
+                        .eq(Order::getDriverId, driverId)
+                        .eq(Order::getStatus, OrderStatus.COMPLETED.getCode())
+                        .apply("DATE(received_at) = {0}", today));
+        response.setTodayOrders(todayOrders != null ? todayOrders.intValue() : 0);
+
+        // 今日店铺数（去重）
+        List<Order> todayOrderList = orderMapper.selectList(
+                new LambdaQueryWrapper<Order>()
+                        .eq(Order::getDriverId, driverId)
+                        .eq(Order::getStatus, OrderStatus.COMPLETED.getCode())
+                        .apply("DATE(received_at) = {0}", today));
+        long todayShopCount = todayOrderList.stream()
+                .map(Order::getShopId)
+                .distinct()
+                .count();
+        response.setTodayShops((int) todayShopCount);
+
+        // 累计订单数
+        Long totalOrders = orderMapper.selectCount(
+                new LambdaQueryWrapper<Order>()
+                        .eq(Order::getDriverId, driverId)
+                        .eq(Order::getStatus, OrderStatus.COMPLETED.getCode()));
+        response.setTotalOrders(totalOrders != null ? totalOrders.intValue() : 0);
+
+        // 累计金额
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        List<Order> allOrders = orderMapper.selectList(
+                new LambdaQueryWrapper<Order>()
+                        .eq(Order::getDriverId, driverId)
+                        .eq(Order::getStatus, OrderStatus.COMPLETED.getCode()));
+        for (Order order : allOrders) {
+            if (order.getTotalAmount() != null) {
+                totalAmount = totalAmount.add(order.getTotalAmount());
+            }
+        }
+        response.setTotalAmount(totalAmount);
+
+        return response;
+    }
+
+    @Override
+    public List<DeliveryHistoryResponse> getDeliveryHistory(Long driverId) {
+        // 获取所有已完成的订单，按日期分组
+        List<Order> completedOrders = orderMapper.selectList(
+                new LambdaQueryWrapper<Order>()
+                        .eq(Order::getDriverId, driverId)
+                        .eq(Order::getStatus, OrderStatus.COMPLETED.getCode())
+                        .isNotNull(Order::getReceivedAt)
+                        .orderByDesc(Order::getReceivedAt));
+
+        // 按日期分组
+        java.util.Map<java.time.LocalDate, List<Order>> ordersByDate = completedOrders.stream()
+                .collect(Collectors.groupingBy(
+                        order -> order.getReceivedAt().toLocalDate(),
+                        java.util.LinkedHashMap::new,
+                        Collectors.toList()));
+
+        List<DeliveryHistoryResponse> historyList = new java.util.ArrayList<>();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (java.util.Map.Entry<java.time.LocalDate, List<Order>> entry : ordersByDate.entrySet()) {
+            DeliveryHistoryResponse history = new DeliveryHistoryResponse();
+            history.setDate(entry.getKey().format(formatter));
+            history.setOrderCount(entry.getValue().size());
+
+            // 店铺数（去重）
+            long shopCount = entry.getValue().stream()
+                    .map(Order::getShopId)
+                    .distinct()
+                    .count();
+            history.setShopCount((int) shopCount);
+
+            // 总金额
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            for (Order order : entry.getValue()) {
+                if (order.getTotalAmount() != null) {
+                    totalAmount = totalAmount.add(order.getTotalAmount());
+                }
+            }
+            history.setTotalAmount(totalAmount);
+
+            historyList.add(history);
+        }
+
+        return historyList;
     }
 }

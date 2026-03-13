@@ -1,0 +1,463 @@
+/* pages/driver/picking/picking.wxss */
+.picking-container {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f0f5ff 0%, #f5f7fa 100%);
+}
+
+/* 顶部标题栏 */
+.header-section {
+    background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+    padding: 30rpx 30rpx 40rpx;
+}
+
+.header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20rpx;
+}
+
+.header-title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #fff;
+}
+
+.progress-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8rpx 20rpx;
+    border-radius: 30rpx;
+}
+
+.progress-text {
+    font-size: 26rpx;
+    color: #fff;
+}
+
+/* 进度条 */
+.progress-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 12rpx;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 6rpx;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 6rpx;
+    transition: width 0.3s ease;
+}
+
+.progress-percent {
+    font-size: 26rpx;
+    color: #fff;
+    min-width: 60rpx;
+    text-align: right;
+}
+
+/* 拣货清单 */
+.picking-list {
+    height: calc(100vh - 280rpx);
+    padding: 20rpx;
+    box-sizing: border-box;
+}
+
+.picking-item {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 16rpx;
+    margin-bottom: 20rpx;
+    padding: 24rpx;
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    width: calc(100% - 40rpx);
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.picking-item.completed {
+    background: linear-gradient(135deg, #f6ffed 0%, #e6fffb 100%);
+    border: 2rpx solid #52c41a;
+}
+
+.item-left {
+    margin-right: 20rpx;
+}
+
+.item-icon {
+    width: 80rpx;
+    height: 80rpx;
+    background: linear-gradient(135deg, #e6f7ff 0%, #f0f5ff 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+}
+
+.picking-item.completed .item-icon {
+    background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+    color: #fff;
+}
+
+.item-content {
+    flex: 1;
+}
+
+.item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12rpx;
+}
+
+.item-name {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #333;
+}
+
+.item-status {
+    padding: 6rpx 16rpx;
+    border-radius: 20rpx;
+    font-size: 22rpx;
+}
+
+.item-status.pending {
+    background: #fff7e6;
+    color: #fa8c16;
+}
+
+.item-status.done {
+    background: #f6ffed;
+    color: #52c41a;
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+}
+
+.info-label {
+    font-size: 24rpx;
+    color: #999;
+}
+
+.info-value {
+    font-size: 26rpx;
+    color: #333;
+    font-weight: 500;
+}
+
+.info-value.highlight {
+    color: #52c41a;
+}
+
+.item-action {
+    margin-left: 20rpx;
+}
+
+.btn-complete {
+    padding: 16rpx 24rpx;
+    background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+    color: #fff;
+    font-size: 24rpx;
+    font-weight: 500;
+    border-radius: 30rpx;
+    border: none;
+}
+
+.btn-complete.done {
+    background: #f5f5f5;
+    color: #999;
+}
+
+/* 空状态 */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100rpx 0;
+}
+
+.empty-icon {
+    font-size: 120rpx;
+    margin-bottom: 20rpx;
+}
+
+.empty-text {
+    font-size: 32rpx;
+    color: #999;
+    margin-bottom: 12rpx;
+}
+
+.empty-tip {
+    font-size: 26rpx;
+    color: #ccc;
+}
+
+/* 加载状态 */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40rpx 0;
+    color: #999;
+    font-size: 26rpx;
+}
+
+.loading-spinner {
+    width: 48rpx;
+    height: 48rpx;
+    border: 4rpx solid #f0f0f0;
+    border-top-color: #1890ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16rpx;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 全部完成提示 */
+.all-done-tip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60rpx 40rpx;
+    background: linear-gradient(135deg, #f6ffed 0%, #e6fffb 100%);
+    border-radius: 16rpx;
+    margin: 20rpx 0;
+}
+
+.done-icon {
+    font-size: 80rpx;
+    margin-bottom: 16rpx;
+}
+
+.done-text {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #52c41a;
+    margin-bottom: 8rpx;
+}
+
+.done-tip {
+    font-size: 26rpx;
+    color: #999;
+}
+
+/* 底部占位 */
+.bottom-placeholder {
+    height: 200rpx;
+}
+
+/* 底部操作栏 */
+.action-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 100rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20rpx 30rpx;
+    background: #fff;
+    box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.08);
+    padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+    z-index: 100;
+}
+
+.action-info {
+    display: flex;
+    align-items: baseline;
+    gap: 8rpx;
+}
+
+.action-label {
+    font-size: 28rpx;
+    color: #666;
+}
+
+.action-count {
+    font-size: 40rpx;
+    font-weight: 600;
+    color: #fa8c16;
+}
+
+.btn-all-complete {
+    background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+    color: #fff;
+    font-size: 30rpx;
+    font-weight: 500;
+    padding: 20rpx 40rpx;
+    border-radius: 40rpx;
+    border: none;
+}
+
+/* 头部操作区域 */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+}
+
+.order-manage-btn {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8rpx 20rpx;
+    border-radius: 30rpx;
+}
+
+.manage-icon {
+    font-size: 26rpx;
+}
+
+.manage-text {
+    font-size: 24rpx;
+    color: #fff;
+}
+
+/* 订单管理弹窗 */
+.order-manage-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.order-manage-modal.show {
+    display: flex;
+}
+
+.order-manage-content {
+    width: 100%;
+    max-height: 70vh;
+    background: #fff;
+    border-radius: 24rpx 24rpx 0 0;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30rpx;
+    border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #333;
+}
+
+.close-btn {
+    font-size: 48rpx;
+    color: #999;
+    line-height: 1;
+}
+
+.order-manage-list {
+    max-height: 60vh;
+    padding: 20rpx;
+}
+
+.manage-order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9f9f9;
+    border-radius: 12rpx;
+    padding: 24rpx;
+    margin-bottom: 16rpx;
+}
+
+.manage-order-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+    min-width: 0;
+}
+
+.manage-shop-name {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.manage-order-no {
+    font-size: 22rpx;
+    color: #999;
+}
+
+.manage-order-amount {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #ff4d4f;
+}
+
+.manage-order-actions {
+    margin-left: 20rpx;
+}
+
+.btn-remove {
+    padding: 12rpx 24rpx;
+    background: #fff;
+    border: 1rpx solid #ff4d4f;
+    border-radius: 8rpx;
+    font-size: 24rpx;
+    color: #ff4d4f;
+}
+
+.empty-orders {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60rpx 0;
+    color: #999;
+    font-size: 28rpx;
+}

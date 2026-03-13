@@ -168,20 +168,32 @@
 
 .order-actions {
     display: flex;
-    gap: 16rpx;
+    flex-wrap: wrap;
+    gap: 12rpx;
+    justify-content: flex-end;
 }
 
-.btn-receive, .btn-detail {
-    padding: 0 28rpx;
-    height: 64rpx;
-    line-height: 64rpx;
-    font-size: 26rpx;
-    border-radius: 32rpx;
+.btn-receive, .btn-detail, .btn-edit {
+    padding: 0 12rpx;
+    height: 44rpx;
+    line-height: 44rpx;
+    font-size: 20rpx;
+    border-radius: 22rpx;
     margin: 0;
+    min-width: auto;
+    width: auto;
+    display: inline-block;
+    white-space: nowrap;
+    box-sizing: border-box;
 }
 
 .btn-receive {
     background: linear-gradient(135deg, #07c160, #06ad56);
+    color: #fff;
+}
+
+.btn-edit {
+    background: linear-gradient(135deg, #1890ff, #096dd9);
     color: #fff;
 }
 

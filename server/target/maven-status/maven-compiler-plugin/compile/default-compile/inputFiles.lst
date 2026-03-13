@@ -12,6 +12,7 @@ c:\documents\development\mini_delivery\server\src\main\java\com\delivery\mapper\
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\controller\AuthController.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\entity\DeliveryOrder.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\mapper\OrderItemMapper.java
+c:\documents\development\mini_delivery\server\src\main\java\com\delivery\dto\response\DriverStatisticsResponse.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\service\AuthService.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\entity\Admin.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\entity\DeliveryList.java
@@ -64,6 +65,7 @@ c:\documents\development\mini_delivery\server\src\main\java\com\delivery\dto\res
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\entity\PickingList.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\controller\BranchController.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\DeliveryApplication.java
+c:\documents\development\mini_delivery\server\src\main\java\com\delivery\dto\response\DeliveryHistoryResponse.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\task\BillGeneratorTask.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\dto\request\BranchManagerCreateRequest.java
 c:\documents\development\mini_delivery\server\src\main\java\com\delivery\service\impl\ShopServiceImpl.java

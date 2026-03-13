@@ -5,6 +5,10 @@ Page({
   data: {
     order: null,
     loading: true,
+    canModify: false,
+    modifyDeadline: '',
+    today: '',
+    hour: 0,
     statusMap: {
       0: { text: '待支付', class: 'status-pending' },
       1: { text: '待分配', class: 'status-waiting' },
@@ -17,6 +21,12 @@ Page({
 
   onLoad(options) {
     const id = options.id;
+    // 初始化日期和时间
+    const now = new Date();
+    this.setData({
+      today: now.toISOString().split('T')[0],
+      hour: now.getHours()
+    });
     if (id) {
       this.loadOrderDetail(id);
     }
@@ -28,15 +38,62 @@ Page({
 
     app.request({ url: `/shop/orders/${id}` })
       .then(data => {
+        // 检查是否可以修改
+        const canModify = this.checkCanModify(data);
+        let modifyDeadline = '';
+
+        if (canModify) {
+          const today = this.data.today;
+          const deliveryDate = data.deliveryDate;
+          if (deliveryDate === today) {
+            modifyDeadline = '今日凌晨2:00前可修改';
+          } else if (deliveryDate > today) {
+            modifyDeadline = '预定订单可随时修改';
+          }
+        }
+
         this.setData({
           order: data,
-          loading: false
+          loading: false,
+          canModify,
+          modifyDeadline
         });
       })
       .catch(err => {
         this.setData({ loading: false });
         wx.showToast({ title: err.message || '加载失败', icon: 'none' });
       });
+  },
+
+  // 检查是否可以修改订单
+  checkCanModify(order) {
+    const today = this.data.today;
+    const hour = this.data.hour;
+    const deliveryDate = order.deliveryDate;
+
+    // 已完成的订单不能修改
+    if (order.status >= 4) {
+      return false;
+    }
+
+    // 预定订单（收货日期在今天之后）：可修改
+    if (deliveryDate > today) {
+      return true;
+    }
+
+    // 今日订单：凌晨2点前可修改
+    if (deliveryDate === today && hour < 2) {
+      return true;
+    }
+
+    return false;
+  },
+
+  // 跳转到修改页面
+  goToEdit() {
+    const order = this.data.order;
+    if (!order) return;
+    wx.navigateTo({ url: `/pages/shop/order-edit/order-edit?id=${order.id}` });
   },
 
   // 确认收货

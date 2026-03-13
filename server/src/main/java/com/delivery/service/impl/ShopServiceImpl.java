@@ -403,11 +403,23 @@ public class ShopServiceImpl implements ShopService {
     }
 
     private boolean canModifyOrder(Order order) {
-        // 仅限当日订单在凌晨2点前可修改
-        if (!order.getDeliveryDate().equals(LocalDate.now())) {
-            return false;
+        LocalDate today = LocalDate.now();
+        LocalDate deliveryDate = order.getDeliveryDate();
+        LocalTime currentTime = LocalDateTime.now().toLocalTime();
+        LocalTime deadline = LocalTime.of(2, 0);
+
+        // 预定订单（收货日期在今天之后）：可修改
+        if (deliveryDate.isAfter(today)) {
+            return true;
         }
-        return LocalDateTime.now().toLocalTime().isBefore(LocalTime.of(2, 0));
+
+        // 今日订单：凌晨2点前可修改
+        if (deliveryDate.equals(today)) {
+            return currentTime.isBefore(deadline);
+        }
+
+        // 历史订单：不可修改
+        return false;
     }
 
     private OrderResponse convertToOrderResponse(Order order, List<OrderItem> items, Driver driver) {
@@ -469,7 +481,7 @@ public class ShopServiceImpl implements ShopService {
             throw new BusinessException(ResultCode.BILL_NOT_FOUND);
         }
 
-        if (!bill.getStatus().equals(BillStatus.PENDING.getCode())) {
+        if (!bill.getStatus().equals(BillStatus.PENDING_PAYMENT.getCode())) {
             throw new BusinessException(ResultCode.BILL_STATUS_ERROR, "账单状态不正确，无法支付");
         }
 

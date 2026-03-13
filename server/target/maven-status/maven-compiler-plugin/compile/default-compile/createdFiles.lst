@@ -78,5 +78,4 @@ com\delivery\DeliveryApplication.class
 com\delivery\task\OrderAssignerTask.class
 com\delivery\entity\PickingList.class
 com\delivery\entity\BillOrder.class
-com\delivery\service\impl\ShopServiceImpl.class
 com\delivery\mapper\BillOrderMapper.class

@@ -1,0 +1,7 @@
+{
+    "navigationBarTitleText": "待分配订单",
+    "enablePullDownRefresh": true,
+    "usingComponents": {
+        "driver-tab-bar": "/components/driver-tab-bar/index"
+    }
+}

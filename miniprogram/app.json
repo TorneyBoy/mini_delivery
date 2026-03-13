@@ -19,11 +19,13 @@
         "pages/shop/cart/cart",
         "pages/shop/order-preview/order-preview",
         "pages/shop/order-detail/order-detail",
+        "pages/shop/order-edit/order-edit",
         "pages/shop/bill-detail/bill-detail",
         "pages/shop/profile/profile",
         "pages/driver/pending/pending",
         "pages/driver/picking/picking",
-        "pages/driver/delivery/delivery"
+        "pages/driver/delivery/delivery",
+        "pages/driver/profile/profile"
     ],
     "window": {
         "backgroundTextStyle": "light",

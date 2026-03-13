@@ -1,0 +1,95 @@
+<!-- pages/shop/order-edit/order-edit.wxml -->
+<view class="edit-container">
+    <view wx:if="{{loading}}" class="loading-container">
+        <text>加载中...</text>
+    </view>
+
+    <block wx:if="{{order && canModify}}">
+        <!-- 修改提示 -->
+        <view class="tip-section" wx:if="{{modifyDeadline}}">
+            <text class="tip-text">⏰ {{modifyDeadline}}</text>
+        </view>
+
+        <!-- 商品列表 -->
+        <view class="section">
+            <view class="section-header">
+                <text class="section-title">商品清单</text>
+                <view class="btn-add" bindtap="showAddProductModal">+ 添加商品</view>
+            </view>
+            <view class="product-list">
+                <view class="product-item" wx:for="{{orderItems}}" wx:key="productId">
+                    <view class="product-info">
+                        <text class="product-name">{{item.productName}}</text>
+                        <text class="product-price">¥{{item.unitPrice}}/{{item.unit}}</text>
+                    </view>
+                    <view class="product-actions">
+                        <view class="quantity-control">
+                            <view class="btn-minus" bindtap="onQuantityChange" data-index="{{index}}" data-type="minus">-</view>
+                            <input class="quantity-input" type="digit" value="{{item.quantity}}" bindinput="onInputQuantity" data-index="{{index}}" />
+                            <view class="btn-plus" bindtap="onQuantityChange" data-index="{{index}}" data-type="plus">+</view>
+                        </view>
+                        <view class="item-total">¥{{item.subtotal}}</view>
+                        <view class="btn-remove" bindtap="onRemoveItem" data-index="{{index}}">删除</view>
+                    </view>
+                </view>
+            </view>
+            <view class="empty-tip" wx:if="{{orderItems.length === 0}}">
+                <text>请添加商品</text>
+            </view>
+        </view>
+
+        <!-- 收货日期 -->
+        <view class="section">
+            <view class="section-title">收货日期</view>
+            <picker mode="selector" range="{{dateRange}}" range-key="label" value="{{dateIndex}}" bindchange="onDateChange">
+                <view class="date-picker">
+                    <text class="date-value">{{dateRange[dateIndex].label}}</text>
+                    <text class="date-arrow">▼</text>
+                </view>
+            </picker>
+        </view>
+
+        <!-- 底部结算栏 -->
+        <view class="bottom-bar">
+            <view class="amount-info">
+                <text class="amount-label">合计:</text>
+                <text class="amount-value">¥{{totalAmount}}</text>
+            </view>
+            <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">保存修改</button>
+        </view>
+    </block>
+
+    <!-- 添加商品弹窗 -->
+    <view class="modal-mask" wx:if="{{showAddProduct}}" bindtap="hideAddProductModal">
+        <view class="modal-content" catchtap="stopPropagation">
+            <view class="modal-header">
+                <text class="modal-title">添加商品</text>
+                <view class="modal-close" bindtap="hideAddProductModal">×</view>
+            </view>
+
+            <!-- 分类导航 -->
+            <scroll-view class="category-nav" scroll-x>
+                <view class="category-item {{currentCategory === '' ? 'active' : ''}}" bindtap="onCategoryChange" data-category="">全部</view>
+                <view class="category-item {{currentCategory === item ? 'active' : ''}}" wx:for="{{categories}}" wx:key="*this" bindtap="onCategoryChange" data-category="{{item}}">{{item}}</view>
+            </scroll-view>
+
+            <!-- 商品列表 -->
+            <scroll-view class="product-scroll" scroll-y>
+                <view class="add-product-list">
+                    <view class="add-product-item" wx:for="{{categoryProducts}}" wx:key="id" bindtap="onAddProduct" data-id="{{item.id}}">
+                        <image class="product-image" src="{{item.imageUrl}}" mode="aspectFill" wx:if="{{item.imageUrl}}"></image>
+                        <view class="product-image placeholder" wx:else>📦</view>
+                        <view class="product-detail">
+                            <text class="product-name">{{item.name}}</text>
+                            <text class="product-price">¥{{item.displayPrice || item.newPrice}}/{{item.unit}}</text>
+                        </view>
+                        <view class="btn-add-item">+添加</view>
+                    </view>
+                </view>
+                <view class="empty-tip" wx:if="{{categoryProducts.length === 0}}">
+                    <text>暂无商品</text>
+                </view>
+            </scroll-view>
+        </view>
+    </view>
+</view>
