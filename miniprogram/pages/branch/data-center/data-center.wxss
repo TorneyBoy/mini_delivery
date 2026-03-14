@@ -1,5 +1,5 @@
-/* pages/admin/statistics/statistics.wxss */
-.statistics-container {
+/* pages/branch/data-center/data-center.wxss */
+.data-center-container {
   min-height: 100vh;
   background-color: #f5f5f5;
   padding-bottom: 20rpx;
@@ -56,7 +56,7 @@
   flex: 1;
   text-align: center;
   padding: 24rpx 0;
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #666;
   position: relative;
 }
@@ -205,20 +205,9 @@
   align-items: center;
 }
 
-.rank-detail {
-  display: flex;
-  flex-direction: column;
-}
-
 .rank-name {
   font-size: 28rpx;
   color: #333;
-}
-
-.rank-sub {
-  font-size: 22rpx;
-  color: #999;
-  margin-top: 4rpx;
 }
 
 .rank-value {
@@ -258,11 +247,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10rpx;
-}
-
-.shop-trend {
-  max-height: 400rpx;
-  overflow-y: auto;
 }
 
 .trend-bar {

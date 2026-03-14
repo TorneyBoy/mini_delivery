@@ -13,6 +13,7 @@ import com.delivery.dto.response.ShopResponse;
 import com.delivery.dto.response.DriverResponse;
 import com.delivery.dto.response.ProductResponse;
 import com.delivery.entity.*;
+import com.delivery.enums.BillStatus;
 import com.delivery.enums.OrderStatus;
 import com.delivery.exception.BusinessException;
 import com.delivery.mapper.*;
@@ -25,9 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +44,7 @@ public class BranchController {
     private final ProductMapper productMapper;
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
+    private final BillMapper billMapper;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -84,6 +85,372 @@ public class BranchController {
         statistics.put("orderCount", orderCount);
 
         return Result.success(statistics);
+    }
+
+    /**
+     * 获取数据中心数据
+     */
+    @Operation(summary = "获取数据中心数据", description = "获取分管理数据中心详细数据")
+    @GetMapping("/data-center")
+    public Result<Map<String, Object>> getDataCenter(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+
+        Long branchManagerId = UserContext.getCurrentUserId();
+
+        // 解析日期，默认近三个月
+        LocalDate end = endDate != null ? LocalDate.parse(endDate) : LocalDate.now();
+        LocalDate start = startDate != null ? LocalDate.parse(startDate) : end.minusMonths(3);
+
+        Map<String, Object> result = new HashMap<>();
+
+        // 获取该分管理下所有店铺ID
+        List<Long> shopIds = shopMapper.selectList(
+                new LambdaQueryWrapper<Shop>().eq(Shop::getBranchManagerId, branchManagerId))
+                .stream().map(Shop::getId).collect(Collectors.toList());
+
+        // 1. 基础统计数据
+        Map<String, Object> overview = new HashMap<>();
+        overview.put("shopCount", shopIds.size());
+
+        Long driverCount = driverMapper.selectCount(
+                new LambdaQueryWrapper<Driver>().eq(Driver::getBranchManagerId, branchManagerId));
+        overview.put("driverCount", driverCount);
+
+        Long productCount = productMapper.selectCount(
+                new LambdaQueryWrapper<Product>().eq(Product::getBranchManagerId, branchManagerId));
+        overview.put("productCount", productCount);
+
+        // 订单统计
+        Long totalOrders = 0L;
+        Long completedOrders = 0L;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        if (!shopIds.isEmpty()) {
+            totalOrders = orderMapper.selectCount(
+                    new LambdaQueryWrapper<Order>().in(Order::getShopId, shopIds));
+
+            List<Order> completed = orderMapper.selectList(
+                    new LambdaQueryWrapper<Order>()
+                            .in(Order::getShopId, shopIds)
+                            .eq(Order::getStatus, OrderStatus.COMPLETED.getCode()));
+            completedOrders = (long) completed.size();
+            totalAmount = completed.stream()
+                    .map(Order::getTotalAmount)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+
+        overview.put("totalOrders", totalOrders);
+        overview.put("completedOrders", completedOrders);
+        overview.put("totalAmount", totalAmount);
+
+        // 计算订单完成率
+        BigDecimal completionRate = totalOrders > 0
+                ? new BigDecimal(completedOrders).divide(new BigDecimal(totalOrders), 4, BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal(100))
+                : BigDecimal.ZERO;
+        overview.put("completionRate", completionRate);
+
+        result.put("overview", overview);
+
+        // 2. 商品销量变化趋势
+        List<Map<String, Object>> salesTrend = getSalesTrend(branchManagerId, shopIds, start, end);
+        result.put("salesTrend", salesTrend);
+
+        // 3. 商品订单量排行榜
+        List<Map<String, Object>> productOrderRank = getProductOrderRank(shopIds, start, end, 10);
+        result.put("productOrderRank", productOrderRank);
+
+        // 4. 商品销量排行榜
+        List<Map<String, Object>> productSalesRank = getProductSalesRank(shopIds, start, end, 10);
+        result.put("productSalesRank", productSalesRank);
+
+        // 5. 入账分布（按店铺）
+        List<Map<String, Object>> revenueByShop = getRevenueByShop(shopIds, start, end, 10);
+        result.put("revenueByShop", revenueByShop);
+
+        // 6. 订单状态分布
+        Map<String, Object> orderStatusDist = getOrderStatusDistribution(shopIds);
+        result.put("orderStatusDist", orderStatusDist);
+
+        // 7. 账单统计
+        Map<String, Object> billStats = getBillStatistics(shopIds);
+        result.put("billStats", billStats);
+
+        return Result.success(result);
+    }
+
+    /**
+     * 获取销量变化趋势
+     */
+    private List<Map<String, Object>> getSalesTrend(Long branchManagerId, List<Long> shopIds, LocalDate start,
+            LocalDate end) {
+        List<Map<String, Object>> trend = new ArrayList<>();
+
+        if (shopIds.isEmpty()) {
+            return trend;
+        }
+
+        // 获取该分管理下所有商品
+        List<Product> products = productMapper.selectList(
+                new LambdaQueryWrapper<Product>().eq(Product::getBranchManagerId, branchManagerId));
+
+        for (Product product : products) {
+            Map<String, Object> productTrend = new HashMap<>();
+            productTrend.put("productId", product.getId());
+            productTrend.put("productName", product.getName());
+
+            List<Map<String, Object>> dailyData = new ArrayList<>();
+            LocalDate current = start;
+
+            while (!current.isAfter(end)) {
+                final LocalDate date = current;
+
+                // 获取当天该商品的销量
+                List<Order> orders = orderMapper.selectList(
+                        new LambdaQueryWrapper<Order>()
+                                .in(Order::getShopId, shopIds)
+                                .ge(Order::getCreatedAt, date.atStartOfDay())
+                                .lt(Order::getCreatedAt, date.plusDays(1).atStartOfDay()));
+
+                if (!orders.isEmpty()) {
+                    List<Long> orderIds = orders.stream().map(Order::getId).collect(Collectors.toList());
+                    List<OrderItem> orderItems = orderItemMapper.selectList(
+                            new LambdaQueryWrapper<OrderItem>()
+                                    .eq(OrderItem::getProductId, product.getId())
+                                    .in(OrderItem::getOrderId, orderIds));
+
+                    BigDecimal dailySales = orderItems.stream()
+                            .map(OrderItem::getQuantity)
+                            .filter(Objects::nonNull)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    Map<String, Object> dayData = new HashMap<>();
+                    dayData.put("date", date.toString());
+                    dayData.put("quantity", dailySales);
+                    dailyData.add(dayData);
+                } else {
+                    Map<String, Object> dayData = new HashMap<>();
+                    dayData.put("date", date.toString());
+                    dayData.put("quantity", BigDecimal.ZERO);
+                    dailyData.add(dayData);
+                }
+
+                current = current.plusDays(1);
+            }
+
+            productTrend.put("dailyData", dailyData);
+            trend.add(productTrend);
+        }
+
+        return trend;
+    }
+
+    /**
+     * 获取商品订单量排行榜
+     */
+    private List<Map<String, Object>> getProductOrderRank(List<Long> shopIds, LocalDate start, LocalDate end,
+            int limit) {
+        if (shopIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Order> orders = orderMapper.selectList(
+                new LambdaQueryWrapper<Order>()
+                        .in(Order::getShopId, shopIds)
+                        .ge(Order::getCreatedAt, start.atStartOfDay())
+                        .le(Order::getCreatedAt, end.plusDays(1).atStartOfDay()));
+
+        if (orders.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> orderIds = orders.stream().map(Order::getId).collect(Collectors.toList());
+
+        List<OrderItem> orderItems = orderItemMapper.selectList(
+                new LambdaQueryWrapper<OrderItem>().in(OrderItem::getOrderId, orderIds));
+
+        Map<Long, Long> productOrderCount = orderItems.stream()
+                .collect(Collectors.groupingBy(OrderItem::getProductId, Collectors.counting()));
+
+        return productOrderCount.entrySet().stream()
+                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> {
+                    Map<String, Object> item = new HashMap<>();
+                    Product product = productMapper.selectById(entry.getKey());
+                    if (product != null) {
+                        item.put("productId", product.getId());
+                        item.put("productName", product.getName());
+                        item.put("orderCount", entry.getValue());
+                    }
+                    return item;
+                })
+                .filter(item -> !item.isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取商品销量排行榜
+     */
+    private List<Map<String, Object>> getProductSalesRank(List<Long> shopIds, LocalDate start, LocalDate end,
+            int limit) {
+        if (shopIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Order> orders = orderMapper.selectList(
+                new LambdaQueryWrapper<Order>()
+                        .in(Order::getShopId, shopIds)
+                        .ge(Order::getCreatedAt, start.atStartOfDay())
+                        .le(Order::getCreatedAt, end.plusDays(1).atStartOfDay()));
+
+        if (orders.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> orderIds = orders.stream().map(Order::getId).collect(Collectors.toList());
+
+        List<OrderItem> orderItems = orderItemMapper.selectList(
+                new LambdaQueryWrapper<OrderItem>().in(OrderItem::getOrderId, orderIds));
+
+        Map<Long, BigDecimal> productSales = orderItems.stream()
+                .collect(Collectors.groupingBy(OrderItem::getProductId,
+                        Collectors.reducing(BigDecimal.ZERO, OrderItem::getQuantity, BigDecimal::add)));
+
+        return productSales.entrySet().stream()
+                .sorted(Map.Entry.<Long, BigDecimal>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> {
+                    Map<String, Object> item = new HashMap<>();
+                    Product product = productMapper.selectById(entry.getKey());
+                    if (product != null) {
+                        item.put("productId", product.getId());
+                        item.put("productName", product.getName());
+                        item.put("salesQuantity", entry.getValue());
+                        item.put("unit", product.getUnit());
+                    }
+                    return item;
+                })
+                .filter(item -> !item.isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取按店铺的入账分布
+     */
+    private List<Map<String, Object>> getRevenueByShop(List<Long> shopIds, LocalDate start, LocalDate end, int limit) {
+        if (shopIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Order> orders = orderMapper.selectList(
+                new LambdaQueryWrapper<Order>()
+                        .in(Order::getShopId, shopIds)
+                        .eq(Order::getStatus, OrderStatus.COMPLETED.getCode())
+                        .ge(Order::getCreatedAt, start.atStartOfDay())
+                        .le(Order::getCreatedAt, end.plusDays(1).atStartOfDay()));
+
+        Map<Long, BigDecimal> shopRevenue = orders.stream()
+                .collect(Collectors.groupingBy(Order::getShopId,
+                        Collectors.reducing(BigDecimal.ZERO,
+                                o -> o.getTotalAmount() != null ? o.getTotalAmount() : BigDecimal.ZERO,
+                                BigDecimal::add)));
+
+        return shopRevenue.entrySet().stream()
+                .sorted(Map.Entry.<Long, BigDecimal>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> {
+                    Map<String, Object> item = new HashMap<>();
+                    Shop shop = shopMapper.selectById(entry.getKey());
+                    if (shop != null) {
+                        item.put("shopId", shop.getId());
+                        item.put("shopName", shop.getName());
+                        item.put("revenue", entry.getValue());
+                    }
+                    return item;
+                })
+                .filter(item -> !item.isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取订单状态分布
+     */
+    private Map<String, Object> getOrderStatusDistribution(List<Long> shopIds) {
+        Map<String, Object> dist = new HashMap<>();
+
+        if (shopIds.isEmpty()) {
+            return dist;
+        }
+
+        for (OrderStatus status : OrderStatus.values()) {
+            Long count = orderMapper.selectCount(
+                    new LambdaQueryWrapper<Order>()
+                            .in(Order::getShopId, shopIds)
+                            .eq(Order::getStatus, status.getCode()));
+            dist.put(status.name().toLowerCase(), count);
+        }
+
+        return dist;
+    }
+
+    /**
+     * 获取账单统计
+     */
+    private Map<String, Object> getBillStatistics(List<Long> shopIds) {
+        Map<String, Object> stats = new HashMap<>();
+
+        if (shopIds.isEmpty()) {
+            stats.put("totalBills", 0);
+            stats.put("pendingBills", 0);
+            stats.put("paidBills", 0);
+            stats.put("totalBillAmount", BigDecimal.ZERO);
+            stats.put("paidBillAmount", BigDecimal.ZERO);
+            return stats;
+        }
+
+        // 账单总数
+        Long totalBills = billMapper.selectCount(
+                new LambdaQueryWrapper<Bill>().in(Bill::getShopId, shopIds));
+        stats.put("totalBills", totalBills);
+
+        // 待支付账单数
+        Long pendingBills = billMapper.selectCount(
+                new LambdaQueryWrapper<Bill>()
+                        .in(Bill::getShopId, shopIds)
+                        .eq(Bill::getStatus, BillStatus.PENDING_PAYMENT.getCode()));
+        stats.put("pendingBills", pendingBills);
+
+        // 已支付账单数
+        Long paidBills = billMapper.selectCount(
+                new LambdaQueryWrapper<Bill>()
+                        .in(Bill::getShopId, shopIds)
+                        .eq(Bill::getStatus, BillStatus.PAID.getCode()));
+        stats.put("paidBills", paidBills);
+
+        // 总金额
+        List<Bill> allBills = billMapper.selectList(
+                new LambdaQueryWrapper<Bill>().in(Bill::getShopId, shopIds));
+        BigDecimal totalAmount = allBills.stream()
+                .map(Bill::getTotalAmount)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        stats.put("totalBillAmount", totalAmount);
+
+        // 已支付金额
+        List<Bill> paidBillList = billMapper.selectList(
+                new LambdaQueryWrapper<Bill>()
+                        .in(Bill::getShopId, shopIds)
+                        .eq(Bill::getStatus, BillStatus.PAID.getCode()));
+        BigDecimal paidAmount = paidBillList.stream()
+                .map(Bill::getTotalAmount)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        stats.put("paidBillAmount", paidAmount);
+
+        return stats;
     }
 
     // ==================== 店铺管理 ====================

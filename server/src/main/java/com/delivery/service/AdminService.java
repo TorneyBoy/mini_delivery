@@ -45,4 +45,12 @@ public interface AdminService {
      * 获取统计数据
      */
     Map<String, Object> getStatistics();
+
+    /**
+     * 获取数据中心详细数据
+     * 
+     * @param startDate 开始日期 (格式: yyyy-MM-dd)
+     * @param endDate   结束日期 (格式: yyyy-MM-dd)
+     */
+    Map<String, Object> getDataCenter(String startDate, String endDate);
 }

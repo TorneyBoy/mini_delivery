@@ -130,6 +130,15 @@ Page({
   },
 
   /**
+   * 跳转到数据中心
+   */
+  goToDataCenter() {
+    wx.navigateTo({
+      url: '/pages/branch/data-center/data-center'
+    })
+  },
+
+  /**
    * 退出登录
    */
   handleLogout() {

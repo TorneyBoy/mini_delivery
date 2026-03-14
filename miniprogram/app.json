@@ -13,6 +13,7 @@
         "pages/branch/product-list/product-list",
         "pages/branch/product-edit/product-edit",
         "pages/branch/order-monitor/order-monitor",
+        "pages/branch/data-center/data-center",
         "pages/shop/index/index",
         "pages/shop/order-list/order-list",
         "pages/shop/bill-list/bill-list",

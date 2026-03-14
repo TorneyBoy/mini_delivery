@@ -85,4 +85,14 @@ public class AdminController {
         Map<String, Object> statistics = adminService.getStatistics();
         return Result.success(statistics);
     }
+
+    @Operation(summary = "获取数据中心数据", description = "获取总管理数据中心详细数据")
+    @GetMapping("/data-center")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Result<Map<String, Object>> getDataCenter(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+        Map<String, Object> data = adminService.getDataCenter(startDate, endDate);
+        return Result.success(data);
+    }
 }

@@ -11,9 +11,12 @@
     </view>
   </view>
 
-  <!-- 数据概览 -->
-  <view class="data-overview">
-    <view class="section-title">数据概览</view>
+  <!-- 数据中心 -->
+  <view class="data-overview" bindtap="goToDataCenter">
+    <view class="section-title">
+      <text>数据中心</text>
+      <text class="arrow">></text>
+    </view>
     <view class="data-cards">
       <view class="data-card">
         <text class="data-value">{{statistics.shopCount || 0}}</text>

@@ -1,4 +1,4 @@
-// pages/admin/statistics/statistics.js
+// pages/branch/data-center/data-center.js
 const app = getApp()
 
 Page({
@@ -11,23 +11,22 @@ Page({
         startDate: '',
         endDate: '',
         overview: {
-            branchManagerCount: 0,
             shopCount: 0,
             driverCount: 0,
             productCount: 0,
             totalOrders: 0,
-            totalAmount: '0.00'
+            completedOrders: 0,
+            totalAmount: '0.00',
+            completionRate: '0.00'
         },
+        salesTrend: [],
         productOrderRank: [],
         productSalesRank: [],
-        salesTrend: [],
-        revenueByBranch: [],
         revenueByShop: [],
-        shopTrend: [],
         orderStatusDist: {},
         billStats: {},
         loading: false,
-        activeTab: 'overview', // overview, product, branch, shop
+        activeTab: 'overview', // overview, product, shop
         showDatePicker: false
     },
 
@@ -66,7 +65,7 @@ Page({
         wx.showLoading({ title: '加载中...' })
 
         wx.request({
-            url: `${app.globalData.baseUrl}/admin/data-center`,
+            url: `${app.globalData.baseUrl}/branch/data-center`,
             method: 'GET',
             data: {
                 startDate: this.data.startDate,
@@ -82,14 +81,7 @@ Page({
                     // 格式化金额
                     if (data.overview) {
                         data.overview.totalAmount = this.formatMoney(data.overview.totalAmount || 0)
-                    }
-
-                    // 格式化分管理收入金额
-                    if (data.revenueByBranch) {
-                        data.revenueByBranch = data.revenueByBranch.map(item => ({
-                            ...item,
-                            revenue: this.formatMoney(item.revenue || 0)
-                        }))
+                        data.overview.completionRate = this.formatRate(data.overview.completionRate || 0)
                     }
 
                     // 格式化店铺收入金额
@@ -108,12 +100,10 @@ Page({
 
                     this.setData({
                         overview: data.overview || {},
+                        salesTrend: data.salesTrend || [],
                         productOrderRank: data.productOrderRank || [],
                         productSalesRank: data.productSalesRank || [],
-                        salesTrend: data.salesTrend || [],
-                        revenueByBranch: data.revenueByBranch || [],
                         revenueByShop: data.revenueByShop || [],
-                        shopTrend: data.shopTrend || [],
                         orderStatusDist: data.orderStatusDist || {},
                         billStats: data.billStats || {}
                     })
@@ -138,6 +128,13 @@ Page({
      */
     formatMoney(amount) {
         return parseFloat(amount).toFixed(2)
+    },
+
+    /**
+     * 格式化比率
+     */
+    formatRate(rate) {
+        return parseFloat(rate).toFixed(2)
     },
 
     /**

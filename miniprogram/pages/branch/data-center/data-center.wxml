@@ -1,5 +1,5 @@
-<!--pages/admin/statistics/statistics.wxml-->
-<view class="statistics-container">
+<!--pages/branch/data-center/data-center.wxml-->
+<view class="data-center-container">
   <!-- 顶部日期选择 -->
   <view class="header">
     <view class="date-selector" bindtap="showDatePicker">
@@ -19,9 +19,6 @@
     <view class="tab-item {{activeTab === 'product' ? 'active' : ''}}" data-tab="product" bindtap="switchTab">
       <text>商品分析</text>
     </view>
-    <view class="tab-item {{activeTab === 'branch' ? 'active' : ''}}" data-tab="branch" bindtap="switchTab">
-      <text>分管理分析</text>
-    </view>
     <view class="tab-item {{activeTab === 'shop' ? 'active' : ''}}" data-tab="shop" bindtap="switchTab">
       <text>店铺分析</text>
     </view>
@@ -31,23 +28,23 @@
   <view class="content" wx:if="{{activeTab === 'overview'}}">
     <!-- 基础统计 -->
     <view class="stats-section">
-      <view class="section-title">全局数据</view>
+      <view class="section-title">基础数据</view>
       <view class="stats-grid">
         <view class="stats-item">
-          <text class="stats-value">{{overview.branchManagerCount || 0}}</text>
-          <text class="stats-label">分管理数量</text>
-        </view>
-        <view class="stats-item">
           <text class="stats-value">{{overview.shopCount || 0}}</text>
-          <text class="stats-label">店铺总数</text>
+          <text class="stats-label">店铺数量</text>
         </view>
         <view class="stats-item">
           <text class="stats-value">{{overview.driverCount || 0}}</text>
-          <text class="stats-label">司机总数</text>
+          <text class="stats-label">司机数量</text>
         </view>
         <view class="stats-item">
           <text class="stats-value">{{overview.productCount || 0}}</text>
-          <text class="stats-label">商品总数</text>
+          <text class="stats-label">商品数量</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-value">{{overview.totalOrders || 0}}</text>
+          <text class="stats-label">订单总数</text>
         </view>
       </view>
     </view>
@@ -57,8 +54,12 @@
       <view class="section-title">订单统计</view>
       <view class="stats-grid">
         <view class="stats-item">
-          <text class="stats-value">{{overview.totalOrders || 0}}</text>
-          <text class="stats-label">订单总数</text>
+          <text class="stats-value">{{overview.completedOrders || 0}}</text>
+          <text class="stats-label">已完成订单</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-value">{{overview.completionRate}}%</text>
+          <text class="stats-label">完成率</text>
         </view>
         <view class="stats-item">
           <text class="stats-value">¥{{overview.totalAmount}}</text>
@@ -182,29 +183,6 @@
     </view>
   </view>
 
-  <!-- 分管理分析 -->
-  <view class="content" wx:if="{{activeTab === 'branch'}}">
-    <!-- 入账分布 -->
-    <view class="stats-section">
-      <view class="section-title">分管理入账排行</view>
-      <view class="rank-list" wx:if="{{revenueByBranch.length > 0}}">
-        <view class="rank-item" wx:for="{{revenueByBranch}}" wx:key="branchManagerId">
-          <view class="rank-index">{{index + 1}}</view>
-          <view class="rank-info">
-            <view class="rank-detail">
-              <text class="rank-name">{{item.brandName}}</text>
-              <text class="rank-sub">店铺数: {{item.shopCount}}</text>
-            </view>
-            <text class="rank-value">¥{{item.revenue}}</text>
-          </view>
-        </view>
-      </view>
-      <view class="empty-tip" wx:else>
-        <text>暂无数据</text>
-      </view>
-    </view>
-  </view>
-
   <!-- 店铺分析 -->
   <view class="content" wx:if="{{activeTab === 'shop'}}">
     <!-- 入账分布 -->
@@ -216,22 +194,6 @@
           <view class="rank-info">
             <text class="rank-name">{{item.shopName}}</text>
             <text class="rank-value">¥{{item.revenue}}</text>
-          </view>
-        </view>
-      </view>
-      <view class="empty-tip" wx:else>
-        <text>暂无数据</text>
-      </view>
-    </view>
-
-    <!-- 店铺数量变化趋势 -->
-    <view class="stats-section">
-      <view class="section-title">店铺数量变化趋势</view>
-      <view class="trend-list" wx:if="{{shopTrend.length > 0}}">
-        <view class="trend-chart shop-trend">
-          <view class="trend-bar" wx:for="{{shopTrend}}" wx:key="date">
-            <view class="bar-label">{{item.date}}</view>
-            <view class="bar-value">{{item.count}}</view>
           </view>
         </view>
       </view>

@@ -52,10 +52,19 @@
 }
 
 .section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 30rpx;
   font-weight: bold;
   color: #333333;
   margin-bottom: 20rpx;
+}
+
+.section-title .arrow {
+  font-size: 28rpx;
+  color: #999;
+  font-weight: normal;
 }
 
 .data-cards {

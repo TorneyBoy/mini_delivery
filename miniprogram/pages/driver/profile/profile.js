@@ -94,11 +94,8 @@ Page({
             content: '确定要退出登录吗？',
             success: (res) => {
                 if (res.confirm) {
-                    // 清除登录信息
-                    wx.removeStorageSync('token');
-                    wx.removeStorageSync('userInfo');
-                    // 跳转到登录页
-                    wx.reLaunch({ url: '/pages/login/login' });
+                    // 调用全局登出方法，清除所有登录状态
+                    app.logout();
                 }
             }
         });
