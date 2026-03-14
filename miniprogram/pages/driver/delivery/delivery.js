@@ -65,11 +65,22 @@ Page({
     // 先尝试获取地址的经纬度
     wx.showLoading({ title: '获取位置中...' });
 
+    // 从全局配置获取腾讯地图key
+    const mapKey = app.globalData.tencentMapKey || '';
+
+    if (!mapKey) {
+      // 如果没有配置地图key，直接复制地址
+      wx.hideLoading();
+      this.copyAddress(address);
+      wx.showToast({ title: '请配置腾讯地图Key', icon: 'none' });
+      return;
+    }
+
     wx.request({
       url: 'https://apis.map.qq.com/ws/geocoder/v1/',
       data: {
         address: address,
-        key: 'YOUR_TENCENT_MAP_KEY' // 需要替换为实际的腾讯地图key
+        key: mapKey
       },
       success: (res) => {
         wx.hideLoading();

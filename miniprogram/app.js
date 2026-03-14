@@ -7,7 +7,8 @@ App({
         baseUrl: 'http://localhost:8081/api',
         cartItems: [],  // 购物车商品列表
         orderItems: [], // 订单商品列表
-        orderAmount: '0.00' // 订单金额
+        orderAmount: '0.00', // 订单金额
+        tencentMapKey: '' // 腾讯地图key，上线前需要配置
     },
 
     onLaunch() {

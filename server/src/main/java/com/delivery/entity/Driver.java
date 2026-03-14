@@ -59,6 +59,11 @@ public class Driver implements Serializable {
     private LocalDateTime updatedAt;
 
     /**
+     * 微信openid（用于消息推送）
+     */
+    private String openid;
+
+    /**
      * 逻辑删除
      */
     @TableLogic
