@@ -99,5 +99,12 @@ Page({
                 }
             }
         });
+    },
+
+    // 跳转到商品图片请求页面
+    goToProductRequests() {
+        wx.navigateTo({
+            url: '/pages/driver/product-requests/product-requests'
+        });
     }
 });

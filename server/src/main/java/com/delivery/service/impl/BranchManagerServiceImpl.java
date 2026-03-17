@@ -50,6 +50,8 @@ public class BranchManagerServiceImpl implements BranchManagerService {
         shop.setBranchManagerId(branchManagerId);
         shop.setName(request.getName());
         shop.setAddress(request.getAddress());
+        shop.setLatitude(request.getLatitude());
+        shop.setLongitude(request.getLongitude());
         shop.setPhone(request.getPhone());
         shop.setPassword(passwordEncoder.encode(request.getPassword()));
         shop.setShowPrice(request.getShowPrice());
@@ -94,6 +96,8 @@ public class BranchManagerServiceImpl implements BranchManagerService {
 
         shop.setName(request.getName());
         shop.setAddress(request.getAddress());
+        shop.setLatitude(request.getLatitude());
+        shop.setLongitude(request.getLongitude());
         if (StringUtils.hasText(request.getPassword())) {
             shop.setPassword(passwordEncoder.encode(request.getPassword()));
         }
@@ -280,6 +284,8 @@ public class BranchManagerServiceImpl implements BranchManagerService {
         response.setId(shop.getId());
         response.setName(shop.getName());
         response.setAddress(shop.getAddress());
+        response.setLatitude(shop.getLatitude());
+        response.setLongitude(shop.getLongitude());
         response.setPhone(shop.getPhone());
         response.setShowPrice(shop.getShowPrice());
         response.setPriceType(shop.getPriceType());

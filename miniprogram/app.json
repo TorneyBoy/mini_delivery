@@ -1,6 +1,7 @@
 {
     "pages": [
         "pages/login/login",
+        "pages/register/register",
         "pages/admin/index/index",
         "pages/admin/branch-list/branch-list",
         "pages/admin/branch-detail/branch-detail",
@@ -12,8 +13,14 @@
         "pages/branch/driver-edit/driver-edit",
         "pages/branch/product-list/product-list",
         "pages/branch/product-edit/product-edit",
+        "pages/branch/product-search/product-search",
         "pages/branch/order-monitor/order-monitor",
+        "pages/branch/order-detail/order-detail",
         "pages/branch/data-center/data-center",
+        "pages/branch/product-review/product-review",
+        "pages/branch/registration-requests/registration-requests",
+        "pages/branch/change-password/change-password",
+        "pages/branch/bill-statistics/bill-statistics",
         "pages/shop/index/index",
         "pages/shop/order-list/order-list",
         "pages/shop/bill-list/bill-list",
@@ -26,7 +33,9 @@
         "pages/driver/pending/pending",
         "pages/driver/picking/picking",
         "pages/driver/delivery/delivery",
-        "pages/driver/profile/profile"
+        "pages/driver/profile/profile",
+        "pages/driver/upload-product/upload-product",
+        "pages/driver/product-requests/product-requests"
     ],
     "window": {
         "backgroundTextStyle": "light",
@@ -34,6 +43,14 @@
         "navigationBarTitleText": "配送管理系统",
         "navigationBarTextStyle": "white"
     },
+    "permission": {
+        "scope.userLocation": {
+            "desc": "您的位置信息将用于选择店铺地址"
+        }
+    },
+    "requiredPrivateInfos": [
+        "chooseLocation"
+    ],
     "style": "v2",
     "sitemapLocation": "sitemap.json"
 }

@@ -1,0 +1,36 @@
+<!--pages/register/register.wxml-->
+<view class="register-container">
+  <view class="register-header">
+    <text class="title">{{role === 'SHOP' ? '店铺注册' : '司机注册'}}</text>
+    <text class="subtitle">请填写以下信息完成注册</text>
+  </view>
+  
+  <view class="register-form">
+    <view class="form-item">
+      <text class="form-label">{{role === 'SHOP' ? '店铺名称' : '司机姓名'}}</text>
+      <input class="form-input" placeholder="请输入{{role === 'SHOP' ? '店铺名称' : '司机姓名'}}" value="{{name}}" bindinput="onNameInput" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">手机号</text>
+      <input class="form-input" type="number" placeholder="请输入手机号" maxlength="11" value="{{phone}}" bindinput="onPhoneInput" />
+    </view>
+    
+    <view class="form-item" wx:if="{{role === 'SHOP'}}">
+      <text class="form-label">地址</text>
+      <input class="form-input address-input" placeholder="请输入地址" value="{{address}}" bindinput="onAddressInput" />
+      <view class="map-btn" bindtap="chooseLocation">
+        <text class="map-icon">📍</text>
+      </view>
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" password placeholder="请输入密码（至少6位）" value="{{password}}" bindinput="onPasswordInput" />
+    </view>
+    
+    <button class="btn-register" bindtap="handleSubmit" loading="{{loading}}">
+      立即注册
+    </button>
+  </view>
+</view>

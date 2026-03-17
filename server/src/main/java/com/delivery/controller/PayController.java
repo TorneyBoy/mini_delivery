@@ -2,12 +2,14 @@ package com.delivery.controller;
 
 import com.delivery.dto.response.PayResponse;
 import com.delivery.service.WechatPayService;
+import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,7 @@ import java.util.Map;
 
 /**
  * 微信支付控制器
+ * 只有在配置了微信支付相关参数时才启用
  */
 @Slf4j
 @Tag(name = "支付", description = "微信支付相关接口")
@@ -25,6 +28,7 @@ import java.util.Map;
 @RequestMapping("/api/pay")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer")
+@ConditionalOnBean(JsapiServiceExtension.class)
 public class PayController {
 
     private final WechatPayService wechatPayService;

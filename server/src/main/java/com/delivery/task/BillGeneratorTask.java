@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.delivery.entity.*;
 import com.delivery.enums.OrderStatus;
 import com.delivery.mapper.*;
+import com.delivery.service.WechatMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,7 +21,8 @@ import java.util.stream.Collectors;
 
 /**
  * 账单生成定时任务
- * 每日22:00自动为旗下每个店铺生成当日账单
+ * 每日10:00自动为旗下每个店铺生成当日账单
+ * 生成后5分钟自动发送账单通知
  */
 @Slf4j
 @Component
@@ -32,11 +34,12 @@ public class BillGeneratorTask {
     private final BillMapper billMapper;
     private final BillOrderMapper billOrderMapper;
     private final TaskLogMapper taskLogMapper;
+    private final WechatMessageService wechatMessageService;
 
     /**
-     * 每日22:00执行
+     * 每日10:00执行账单生成
      */
-    @Scheduled(cron = "0 0 22 * * ?")
+    @Scheduled(cron = "0 0 10 * * ?")
     @Transactional(rollbackFor = Exception.class)
     public void generateBills() {
         log.info("开始执行账单生成任务...");
@@ -89,6 +92,7 @@ public class BillGeneratorTask {
                     bill.setBillDate(today);
                     bill.setTotalAmount(totalAmount);
                     bill.setStatus(0); // 待支付
+                    bill.setSendStatus(0); // 未发送
 
                     billMapper.insert(bill);
 
@@ -118,6 +122,66 @@ public class BillGeneratorTask {
         } catch (Exception e) {
             log.error("账单生成任务执行失败", e);
             saveTaskLog("BILL_GENERATOR", startTime, 0, e.getMessage());
+        }
+    }
+
+    /**
+     * 每日10:05执行账单发送
+     * 生成账单后5分钟自动发送
+     */
+    @Scheduled(cron = "0 5 10 * * ?")
+    @Transactional(rollbackFor = Exception.class)
+    public void sendBills() {
+        log.info("开始执行账单发送任务...");
+        LocalDateTime startTime = LocalDateTime.now();
+
+        try {
+            LocalDate today = LocalDate.now();
+            int successCount = 0;
+            int failCount = 0;
+
+            // 获取今日生成但未发送的账单
+            List<Bill> unsentBills = billMapper.selectList(
+                    new LambdaQueryWrapper<Bill>()
+                            .eq(Bill::getBillDate, today)
+                            .eq(Bill::getSendStatus, 0)
+                            .isNull(Bill::getSentAt));
+
+            for (Bill bill : unsentBills) {
+                try {
+                    Shop shop = shopMapper.selectById(bill.getShopId());
+                    if (shop == null) {
+                        log.warn("账单 {} 对应的店铺不存在，跳过", bill.getId());
+                        continue;
+                    }
+
+                    // 发送微信订阅消息
+                    wechatMessageService.sendBillCreatedNotice(shop.getId(), bill.getId(),
+                            bill.getTotalAmount().toString());
+
+                    // 更新发送状态
+                    bill.setSendStatus(1);
+                    bill.setSentAt(LocalDateTime.now());
+                    billMapper.updateById(bill);
+
+                    successCount++;
+                    log.info("账单 {} 发送成功，shopId: {}", bill.getId(), shop.getId());
+
+                } catch (Exception e) {
+                    failCount++;
+                    log.error("账单 {} 发送失败: {}", bill.getId(), e.getMessage(), e);
+                }
+            }
+
+            // 记录任务日志
+            saveTaskLog("BILL_SENDER", startTime, 1,
+                    String.format("成功: %d, 失败: %d", successCount, failCount));
+
+            log.info("账单发送任务完成，成功: {}, 失败: {}", successCount, failCount);
+
+        } catch (Exception e) {
+            log.error("账单发送任务执行失败", e);
+            saveTaskLog("BILL_SENDER", startTime, 0, e.getMessage());
         }
     }
 

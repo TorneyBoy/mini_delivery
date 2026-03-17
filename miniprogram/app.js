@@ -1,14 +1,16 @@
 // app.js
+const config = require('./config.js');
+
 App({
     globalData: {
         userInfo: null,
         token: null,
         role: null,
-        baseUrl: 'http://localhost:8081/api',
+        baseUrl: config.baseUrl,
         cartItems: [],  // 购物车商品列表
         orderItems: [], // 订单商品列表
         orderAmount: '0.00', // 订单金额
-        tencentMapKey: '' // 腾讯地图key，上线前需要配置
+        tencentMapKey: config.tencentMapKey
     },
 
     onLaunch() {
@@ -35,10 +37,13 @@ App({
                         const data = res.data.data;
                         this.globalData.token = data.token;
                         this.globalData.userInfo = {
+                            id: data.userId,
                             userId: data.userId,
                             phone: data.phone,
                             role: data.role,
-                            roleDesc: data.roleDesc
+                            roleDesc: data.roleDesc,
+                            brandName: data.brandName || null,
+                            name: data.name || null
                         };
                         this.globalData.role = data.role;
 
@@ -107,5 +112,31 @@ App({
                 }
             });
         });
+    },
+
+    /**
+     * 获取完整的图片URL
+     * @param {string} path - 图片路径（可能是相对路径或完整URL）
+     * @returns {string} 完整的图片URL
+     */
+    getImageUrl(path) {
+        if (!path) {
+            return '';
+        }
+        // 如果已经是完整URL（http/https开头），直接返回
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+            return path;
+        }
+        // 如果是相对路径，拼接服务器地址
+        // baseUrl 格式为 http://localhost:8081/api，需要去掉 /api 部分
+        let serverUrl = this.globalData.baseUrl;
+        if (serverUrl.endsWith('/api')) {
+            serverUrl = serverUrl.slice(0, -4); // 去掉 '/api'
+        }
+        // 确保路径以 / 开头
+        if (!path.startsWith('/')) {
+            path = '/' + path;
+        }
+        return serverUrl + path;
     }
 });

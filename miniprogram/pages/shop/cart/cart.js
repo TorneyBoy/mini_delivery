@@ -3,7 +3,6 @@ const app = getApp();
 
 Page({
   data: {
-    baseUrl: 'http://localhost:8081', // 后端服务器地址
     cartItems: [],
     totalAmount: '0.00',
     totalCount: 0,
@@ -46,6 +45,10 @@ Page({
     cartItems.forEach(item => {
       totalAmount += item.quantity * parseFloat(item.unitPrice);
       totalCount += item.quantity;
+      // 处理图片URL
+      if (item.imageUrl) {
+        item.imageUrl = app.getImageUrl(item.imageUrl);
+      }
     });
 
     this.setData({

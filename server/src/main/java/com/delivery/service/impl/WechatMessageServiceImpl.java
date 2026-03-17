@@ -7,8 +7,8 @@ import com.delivery.entity.Shop;
 import com.delivery.mapper.DriverMapper;
 import com.delivery.mapper.ShopMapper;
 import com.delivery.service.WechatMessageService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +19,22 @@ import java.util.Map;
 
 /**
  * 微信订阅消息服务实现
+ * 如果未配置微信小程序参数，wxMaService 为 null，相关功能将不可用
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class WechatMessageServiceImpl implements WechatMessageService {
 
-    private final WxMaService wxMaService;
     private final ShopMapper shopMapper;
     private final DriverMapper driverMapper;
+    private final WxMaService wxMaService;
+
+    public WechatMessageServiceImpl(ShopMapper shopMapper, DriverMapper driverMapper,
+            @Autowired(required = false) WxMaService wxMaService) {
+        this.shopMapper = shopMapper;
+        this.driverMapper = driverMapper;
+        this.wxMaService = wxMaService;
+    }
 
     @Value("${wechat.miniapp.appid:}")
     private String appid;

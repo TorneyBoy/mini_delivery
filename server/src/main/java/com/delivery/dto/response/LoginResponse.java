@@ -25,6 +25,12 @@ public class LoginResponse {
     @Schema(description = "角色描述")
     private String roleDesc;
 
+    @Schema(description = "品牌名称（仅分管理有）")
+    private String brandName;
+
+    @Schema(description = "用户名称")
+    private String name;
+
     public static LoginResponse of(String token, Long userId, String phone, String role, String roleDesc) {
         LoginResponse response = new LoginResponse();
         response.setToken(token);
@@ -32,6 +38,19 @@ public class LoginResponse {
         response.setPhone(phone);
         response.setRole(role);
         response.setRoleDesc(roleDesc);
+        return response;
+    }
+
+    public static LoginResponse of(String token, Long userId, String phone, String role, String roleDesc,
+            String brandName, String name) {
+        LoginResponse response = new LoginResponse();
+        response.setToken(token);
+        response.setUserId(userId);
+        response.setPhone(phone);
+        response.setRole(role);
+        response.setRoleDesc(roleDesc);
+        response.setBrandName(brandName);
+        response.setName(name);
         return response;
     }
 }

@@ -1,11 +1,16 @@
 package com.delivery.service;
 
+import com.delivery.dto.request.OrderItemModifyRequest;
+import com.delivery.dto.request.ProductImageRequestDto;
 import com.delivery.dto.response.DeliveryHistoryResponse;
 import com.delivery.dto.response.DeliveryListResponse;
 import com.delivery.dto.response.DriverResponse;
 import com.delivery.dto.response.DriverStatisticsResponse;
+import com.delivery.dto.response.OrderDetailResponse;
 import com.delivery.dto.response.OrderResponse;
 import com.delivery.dto.response.PickingListResponse;
+import com.delivery.dto.response.ProductImageRequestResponse;
+import com.delivery.dto.response.ProductResponse;
 
 import java.util.List;
 
@@ -62,7 +67,7 @@ public interface DriverService {
     /**
      * 完成送货
      */
-    void completeDelivery(Long driverId, Long deliveryListId);
+    void completeDelivery(Long driverId, Long deliveryListId, String deliveryPhoto);
 
     /**
      * 获取司机统计数据
@@ -73,4 +78,29 @@ public interface DriverService {
      * 获取司机历史送货记录
      */
     List<DeliveryHistoryResponse> getDeliveryHistory(Long driverId);
+
+    /**
+     * 提交商品图片请求
+     */
+    void submitProductImageRequest(Long driverId, ProductImageRequestDto request);
+
+    /**
+     * 获取司机的商品图片请求列表
+     */
+    List<ProductImageRequestResponse> getMyProductImageRequests(Long driverId);
+
+    /**
+     * 获取已选订单的详细信息（用于拣货修改）
+     */
+    List<OrderDetailResponse> getSelectedOrdersDetail(Long driverId);
+
+    /**
+     * 修改订单商品
+     */
+    void modifyOrderItems(Long driverId, OrderItemModifyRequest request);
+
+    /**
+     * 获取商品库列表（用于拣货时添加商品）
+     */
+    List<ProductResponse> getAvailableProducts(Long driverId);
 }

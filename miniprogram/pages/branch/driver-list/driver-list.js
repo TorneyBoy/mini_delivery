@@ -9,7 +9,8 @@ Page({
     hasMore: true,
     loading: false,
     searchKey: '',
-    needRefresh: false
+    needRefresh: false,
+    shareItem: null
   },
 
   onLoad(options) {
@@ -108,6 +109,38 @@ Page({
     wx.navigateTo({
       url: '/pages/branch/driver-edit/driver-edit?mode=add'
     })
+  },
+
+  /**
+   * 分享司机注册链接
+   */
+  handleShare(e) {
+    const item = e.currentTarget.dataset.item
+    this.setData({ shareItem: item })
+    // 触发分享
+  },
+
+  /**
+   * 分享给司机
+   */
+  onShareAppMessage() {
+    const item = this.data.shareItem
+    const userInfo = app.globalData.userInfo
+    const branchManagerId = userInfo ? userInfo.id : null
+
+    if (item && branchManagerId) {
+      return {
+        title: `邀请您注册成为司机【${item.name}】`,
+        path: `/pages/register/register?role=DRIVER&branchManagerId=${branchManagerId}&name=${encodeURIComponent(item.name)}&phone=${item.phone}`,
+        success: () => {
+          wx.showToast({ title: '分享成功', icon: 'success' })
+        }
+      }
+    }
+    return {
+      title: '邀请您注册成为司机',
+      path: `/pages/register/register?role=DRIVER&branchManagerId=${branchManagerId || ''}`
+    }
   },
 
   onPullDownRefresh() {

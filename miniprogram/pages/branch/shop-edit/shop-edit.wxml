@@ -9,7 +9,10 @@
     
     <view class="form-item">
       <text class="form-label">地址</text>
-      <input class="form-input" placeholder="请输入地址" value="{{address}}" bindinput="onAddressInput" />
+      <input class="form-input address-input" placeholder="请输入地址" value="{{address}}" bindinput="onAddressInput" />
+      <view class="map-btn" bindtap="chooseLocation">
+        <text class="map-icon">📍</text>
+      </view>
     </view>
     
     <view class="form-item">

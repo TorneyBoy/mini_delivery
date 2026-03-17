@@ -1,0 +1,88 @@
+<!-- pages/branch/product-review/product-review.wxml -->
+<view class="container">
+    <!-- 请求列表 -->
+    <view class="list-section">
+        <view class="list-item" wx:for="{{list}}" wx:key="id">
+            <view class="item-header">
+                <view class="header-left">
+                    <text class="product-name">{{item.productName}}</text>
+                    <text class="driver-name">提交人：{{item.driverName}}</text>
+                </view>
+                <text class="status status-{{item.status === 0 ? 'pending' : (item.status === 1 ? 'approved' : 'rejected')}}">
+                    {{item.statusText}}
+                </text>
+            </view>
+            
+            <view class="item-content">
+                <image class="product-image" src="{{item.imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.imageUrl}}" />
+                <view class="product-info">
+                    <text class="info-row" wx:if="{{item.category}}">类别：{{item.category}}</text>
+                    <text class="info-row" wx:if="{{item.description}}">描述：{{item.description}}</text>
+                    <text class="info-row">提交时间：{{item.createdAt}}</text>
+                </view>
+            </view>
+
+            <view class="item-footer" wx:if="{{item.status === 2 && item.rejectReason}}">
+                <text class="reject-reason">拒绝原因：{{item.rejectReason}}</text>
+            </view>
+
+            <view class="item-actions" wx:if="{{item.status === 0}}">
+                <button class="review-btn" bindtap="openReviewModal" data-item="{{item}}">审核</button>
+            </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{list.length === 0 && !loading}}">
+            <text class="empty-icon">📋</text>
+            <text class="empty-text">暂无审核请求</text>
+        </view>
+
+        <!-- 加载状态 -->
+        <view class="loading-state" wx:if="{{loading}}">
+            <view class="loading-spinner"></view>
+            <text>加载中...</text>
+        </view>
+    </view>
+
+    <!-- 审核弹窗 -->
+    <view class="modal-mask" wx:if="{{showReviewModal}}" bindtap="closeReviewModal">
+        <view class="modal-content" catchtap>
+            <view class="modal-header">
+                <text class="modal-title">审核商品图片</text>
+                <text class="modal-close" bindtap="closeReviewModal">×</text>
+            </view>
+
+            <view class="modal-body">
+                <view class="review-image" wx:if="{{currentRequest.imageUrl}}">
+                    <image src="{{currentRequest.imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{currentRequest.imageUrl}}" />
+                </view>
+
+                <view class="product-detail">
+                    <text class="detail-name">{{currentRequest.productName}}</text>
+                    <text class="detail-row" wx:if="{{currentRequest.category}}">类别：{{currentRequest.category}}</text>
+                    <text class="detail-row" wx:if="{{currentRequest.description}}">描述：{{currentRequest.description}}</text>
+                </view>
+
+                <view class="review-options">
+                    <view class="option-item {{reviewApproved ? 'active' : ''}}" bindtap="selectApprove">
+                        <text class="option-icon">✓</text>
+                        <text class="option-text">通过</text>
+                    </view>
+                    <view class="option-item {{!reviewApproved ? 'active reject-active' : ''}}" bindtap="selectReject">
+                        <text class="option-icon">×</text>
+                        <text class="option-text">拒绝</text>
+                    </view>
+                </view>
+
+                <view class="reject-input" wx:if="{{!reviewApproved}}">
+                    <textarea class="reject-textarea" placeholder="请输入拒绝原因" value="{{rejectReason}}" bindinput="onRejectReasonInput" />
+                </view>
+            </view>
+
+            <view class="modal-footer">
+                <button class="cancel-btn" bindtap="closeReviewModal">取消</button>
+                <button class="confirm-btn" bindtap="submitReview">确认</button>
+            </view>
+        </view>
+    </view>
+</view>

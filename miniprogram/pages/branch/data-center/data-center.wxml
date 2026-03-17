@@ -22,6 +22,15 @@
     <view class="tab-item {{activeTab === 'shop' ? 'active' : ''}}" data-tab="shop" bindtap="switchTab">
       <text>店铺分析</text>
     </view>
+    <view class="tab-item {{activeTab === 'shopProduct' ? 'active' : ''}}" data-tab="shopProduct" bindtap="switchTab">
+      <text>门店订货量</text>
+    </view>
+    <view class="tab-item {{activeTab === 'orderStats' ? 'active' : ''}}" data-tab="orderStats" bindtap="switchTab">
+      <text>预约订单</text>
+    </view>
+    <view class="tab-item {{activeTab === 'deliveryStats' ? 'active' : ''}}" data-tab="deliveryStats" bindtap="switchTab">
+      <text>送达统计</text>
+    </view>
   </view>
 
   <!-- 数据概览 -->
@@ -200,6 +209,100 @@
       <view class="empty-tip" wx:else>
         <text>暂无数据</text>
       </view>
+    </view>
+  </view>
+
+  <!-- 门店商品订货量统计 -->
+  <view class="content" wx:if="{{activeTab === 'shopProduct'}}">
+    <view class="stats-section" wx:for="{{shopProductStats}}" wx:key="shopId">
+      <view class="section-title">{{item.shopName}}</view>
+      <view class="product-table">
+        <view class="table-header">
+          <view class="table-cell">商品名称</view>
+          <view class="table-cell">订货量</view>
+          <view class="table-cell">完成量</view>
+          <view class="table-cell">完成率</view>
+        </view>
+        <view class="table-body">
+          <view class="table-row" wx:for="{{item.products}}" wx:for-item="product" wx:key="productId">
+            <view class="table-cell product-name">{{product.productName}}</view>
+            <view class="table-cell">{{product.orderQuantity}} {{product.unit}}</view>
+            <view class="table-cell completed">{{product.completedQuantity}} {{product.unit}}</view>
+            <view class="table-cell rate">
+              <text wx:if="{{product.orderQuantity > 0}}">{{product.completionRate}}%</text>
+              <text wx:else>0%</text>
+            </view>
+          </view>
+        </view>
+        <view class="empty-tip" wx:if="{{!item.products || item.products.length === 0}}">
+          <text>暂无数据</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:if="{{shopProductStats.length === 0}}">
+      <text>暂无门店数据</text>
+    </view>
+  </view>
+
+  <!-- 预约订单统计（按送达日期整理的下单数据） -->
+  <view class="content" wx:if="{{activeTab === 'orderStats'}}">
+    <view class="stats-section tips-section">
+      <view class="tips-text">预约订单按送达日期整理，方便根据需要对接批发商</view>
+    </view>
+    <view class="stats-section" wx:for="{{orderStatsByDeliveryDate}}" wx:key="date">
+      <view class="section-title">
+        <text>{{item.date}}</text>
+        <text class="sub-title">（{{item.totalOrders}}单）</text>
+      </view>
+      <view class="product-table">
+        <view class="table-header">
+          <view class="table-cell">商品名称</view>
+          <view class="table-cell">预约数量</view>
+        </view>
+        <view class="table-body">
+          <view class="table-row" wx:for="{{item.products}}" wx:for-item="product" wx:key="productId">
+            <view class="table-cell product-name">{{product.productName}}</view>
+            <view class="table-cell">{{product.orderQuantity}} {{product.unit}}</view>
+          </view>
+        </view>
+        <view class="empty-tip" wx:if="{{!item.products || item.products.length === 0}}">
+          <text>暂无数据</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:if="{{orderStatsByDeliveryDate.length === 0}}">
+      <text>暂无预约订单数据</text>
+    </view>
+  </view>
+
+  <!-- 送达数据统计（按日期整理的送达数据） -->
+  <view class="content" wx:if="{{activeTab === 'deliveryStats'}}">
+    <view class="stats-section tips-section">
+      <view class="tips-text">送达数据按日期整理，了解商品销量趋势和与预约订单的差距</view>
+    </view>
+    <view class="stats-section" wx:for="{{deliveryStatsByDate}}" wx:key="date">
+      <view class="section-title">
+        <text>{{item.date}}</text>
+        <text class="sub-title">（{{item.totalDeliveries}}次送达）</text>
+      </view>
+      <view class="product-table">
+        <view class="table-header">
+          <view class="table-cell">商品名称</view>
+          <view class="table-cell">送达数量</view>
+        </view>
+        <view class="table-body">
+          <view class="table-row" wx:for="{{item.products}}" wx:for-item="product" wx:key="productId">
+            <view class="table-cell product-name">{{product.productName}}</view>
+            <view class="table-cell">{{product.deliveredQuantity}} {{product.unit}}</view>
+          </view>
+        </view>
+        <view class="empty-tip" wx:if="{{!item.products || item.products.length === 0}}">
+          <text>暂无数据</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:if="{{deliveryStatsByDate.length === 0}}">
+      <text>暂无送达数据</text>
     </view>
   </view>
 

@@ -37,6 +37,16 @@ public class Shop implements Serializable {
     private String address;
 
     /**
+     * 纬度
+     */
+    private Double latitude;
+
+    /**
+     * 经度
+     */
+    private Double longitude;
+
+    /**
      * 手机号
      */
     private String phone;

@@ -108,7 +108,7 @@
   gap: 20rpx;
 }
 
-.btn-detail, .btn-edit {
+.btn-detail, .btn-edit, .btn-share {
   flex: 1;
   height: 70rpx;
   display: flex;
@@ -131,6 +131,15 @@
 }
 
 .btn-edit text {
+  font-size: 28rpx;
+  color: #ffffff;
+}
+
+.btn-share {
+  background-color: #1890ff;
+}
+
+.btn-share text {
   font-size: 28rpx;
   color: #ffffff;
 }

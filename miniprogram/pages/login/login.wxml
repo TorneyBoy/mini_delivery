@@ -1,7 +1,7 @@
 <!--pages/login/login.wxml-->
 <view class="login-container">
   <view class="login-header">
-    <image class="logo" src="/assets/images/logo.png" mode="aspectFit"></image>
+    <image class="logo" src="/assets/images/logo.svg" mode="aspectFit"></image>
     <text class="title">配送管理系统</text>
     <text class="subtitle">请登录您的账号</text>
   </view>

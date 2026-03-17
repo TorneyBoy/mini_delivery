@@ -49,6 +49,16 @@ public class Bill implements Serializable {
     private Integer status;
 
     /**
+     * 发送状态 0-未发送 1-已发送
+     */
+    private Integer sendStatus;
+
+    /**
+     * 发送时间
+     */
+    private LocalDateTime sentAt;
+
+    /**
      * 支付时间
      */
     private LocalDateTime paidAt;

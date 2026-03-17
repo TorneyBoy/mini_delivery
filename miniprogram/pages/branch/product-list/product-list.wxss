@@ -178,19 +178,33 @@
   color: #1890ff;
 }
 
-/* 添加按钮 */
-.add-btn {
+/* 底部操作按钮 */
+.bottom-actions {
   position: fixed;
   bottom: 30rpx;
   left: 30rpx;
   right: 30rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-btn {
+  flex: 1;
   height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.meituan-btn {
+  background-color: #ff6b00;
+  color: #fff;
+}
+
+.add-btn {
   background-color: #1890ff;
   color: #fff;
-  border-radius: 44rpx;
-  font-size: 32rpx;
-  box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.3);
 }

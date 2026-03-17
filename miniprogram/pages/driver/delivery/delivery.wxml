@@ -112,6 +112,49 @@
         </view>
     </view>
 
+    <!-- 照片选择弹窗 -->
+    <view class="photo-modal {{showPhotoModal ? 'show' : ''}}" catchtap="onClosePhotoModal">
+        <view class="photo-modal-content" catchtap="stopPropagation">
+            <view class="photo-modal-header">
+                <text class="photo-modal-title">提交送达记录照片</text>
+                <view class="close-btn" catchtap="onClosePhotoModal">×</view>
+            </view>
+            <view class="photo-modal-body">
+                <text class="photo-modal-tip">请选择拍照或从图库中选择照片作为送达凭证</text>
+                <view class="photo-options">
+                    <view class="photo-option" bindtap="onTakePhoto">
+                        <view class="option-icon">📷</view>
+                        <text class="option-text">拍照</text>
+                    </view>
+                    <view class="photo-option" bindtap="onChooseFromAlbum">
+                        <view class="option-icon">🖼️</view>
+                        <text class="option-text">从图库选择</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 照片预览弹窗 -->
+    <view class="preview-modal {{showPreview ? 'show' : ''}}" catchtap="onClosePreview">
+        <view class="preview-content" catchtap="stopPropagation">
+            <view class="preview-header">
+                <text class="preview-title">送达照片预览</text>
+                <view class="close-btn" catchtap="onClosePreview">×</view>
+            </view>
+            <view class="preview-body">
+                <view class="preview-shop-name">{{currentShopName}}</view>
+                <image class="preview-image" src="{{tempPhotoPath}}" mode="aspectFit" />
+            </view>
+            <view class="preview-footer">
+                <button class="btn-reselect" bindtap="onReselectPhoto">重新选择</button>
+                <button class="btn-submit" bindtap="onConfirmSubmit" loading="{{completing}}" disabled="{{completing}}">
+                    {{completing ? '提交中...' : '确认提交'}}
+                </button>
+            </view>
+        </view>
+    </view>
+
     <!-- 底部导航栏 -->
     <driver-tab-bar current="{{2}}" deliveryCount="{{deliveryList.length}}" />
 </view>

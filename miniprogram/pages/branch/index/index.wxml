@@ -3,11 +3,16 @@
   <!-- 顶部欢迎信息 -->
   <view class="header">
     <view class="welcome">
-      <text class="welcome-text">欢迎，{{brandName}}</text>
+      <text class="welcome-text">欢迎你，{{brandName}}</text>
       <text class="welcome-desc">分管理后台</text>
     </view>
-    <view class="logout-btn" bindtap="handleLogout">
-      <text>退出登录</text>
+    <view class="header-actions">
+      <view class="change-password-btn" bindtap="goToChangePassword">
+        <text>修改密码</text>
+      </view>
+      <view class="logout-btn" bindtap="handleLogout">
+        <text>退出登录</text>
+      </view>
     </view>
   </view>
 
@@ -72,6 +77,30 @@
         <text class="menu-title">订单监控</text>
         <text class="menu-desc">查看订单状态</text>
       </view>
+      
+      <view class="menu-item" bindtap="goToProductReview">
+        <view class="menu-icon" style="background-color: #f0f5ff;">
+          <text>📷</text>
+        </view>
+        <text class="menu-title">图片审核</text>
+        <text class="menu-desc">审核商品图片</text>
+      </view>
+      
+      <view class="menu-item" bindtap="goToRegistrationRequests">
+        <view class="menu-icon" style="background-color: #fff1f0;">
+          <text>📝</text>
+        </view>
+        <text class="menu-title">注册审核</text>
+        <text class="menu-desc">审核注册申请</text>
+      </view>
+      
+      <view class="menu-item" bindtap="goToBillStatistics">
+        <view class="menu-icon" style="background-color: #e6fffb;">
+          <text>💰</text>
+        </view>
+        <text class="menu-title">账单统计</text>
+        <text class="menu-desc">管理店铺账单</text>
+      </view>
     </view>
   </view>
 
@@ -87,6 +116,21 @@
       </view>
       <view class="quick-btn" bindtap="goToAddProduct">
         <text>+ 添加商品</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分享链接 -->
+  <view class="share-section">
+    <view class="section-title">分享注册链接</view>
+    <view class="share-btns">
+      <view class="share-btn shop-share" bindtap="shareShopRegister">
+        <text class="share-icon">🏪</text>
+        <text class="share-text">分享店铺注册链接</text>
+      </view>
+      <view class="share-btn driver-share" bindtap="shareDriverRegister">
+        <text class="share-icon">🚚</text>
+        <text class="share-text">分享司机注册链接</text>
       </view>
     </view>
   </view>

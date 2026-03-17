@@ -3,46 +3,62 @@
     <!-- 账单列表 -->
     <scroll-view class="bill-scroll" scroll-y enhanced bindscrolltolower="onReachBottom">
         <view class="bill-list">
-            <view class="bill-card" wx:for="{{bills}}" wx:key="id">
-                <view class="bill-header">
-                    <view class="bill-info-left">
-                        <text class="bill-date">📅 {{item.billDate}}</text>
-                        <text class="bill-no">{{item.billNo}}</text>
+            <!-- 按日期分组显示 -->
+            <block wx:for="{{groupedBills}}" wx:key="date" wx:for-item="group">
+                <!-- 日期标题 -->
+                <view class="date-header">
+                    <view class="date-info">
+                        <text class="date-text">{{group.date}}</text>
+                        <text class="date-stats">{{group.bills.length}}笔账单</text>
                     </view>
-                    <text class="bill-status {{statusMap[item.status].class}}">{{statusMap[item.status].text}}</text>
-                </view>
-                
-                <view class="bill-content">
-                    <view class="bill-amount-row">
-                        <text class="amount-label">账单金额</text>
-                        <text class="amount-value">¥{{item.totalAmount}}</text>
+                    <view class="date-summary">
+                        <text class="summary-amount">¥{{group.totalAmount}}</text>
+                        <text class="summary-status" wx:if="{{group.pendingCount > 0}}">{{group.pendingCount}}笔待付</text>
                     </view>
                 </view>
                 
-                <view class="bill-footer">
-                    <text class="bill-time">创建于 {{item.createdAt}}</text>
-                    <view class="bill-actions">
-                        <button 
-                            class="btn-pay" 
-                            wx:if="{{item.status === 0}}"
-                            data-id="{{item.id}}" 
-                            catchtap="onPay">立即支付</button>
-                        <button class="btn-detail" data-id="{{item.id}}" catchtap="goToDetail">详情</button>
+                <!-- 该日期下的账单卡片 -->
+                <view class="bill-card" wx:for="{{group.bills}}" wx:key="id" wx:for-item="bill">
+                    <view class="bill-header">
+                        <view class="bill-info-left">
+                            <text class="bill-no">{{bill.billNo}}</text>
+                        </view>
+                        <text class="bill-status {{statusMap[bill.status].class}}">{{statusMap[bill.status].text}}</text>
+                    </view>
+                    
+                    <view class="bill-content">
+                        <view class="bill-amount-row">
+                            <text class="amount-label">账单金额</text>
+                            <text class="amount-value">¥{{bill.totalAmount}}</text>
+                        </view>
+                    </view>
+                    
+                    <view class="bill-footer">
+                        <text class="bill-time">创建于 {{bill.createdAt}}</text>
+                        <view class="bill-actions">
+                            <button 
+                                class="btn-pay" 
+                                wx:if="{{bill.status === 0}}"
+                                data-id="{{bill.id}}" 
+                                catchtap="onPay">立即支付</button>
+                            <button class="btn-detail" data-id="{{bill.id}}" catchtap="goToDetail">详情</button>
+                        </view>
                     </view>
                 </view>
-            </view>
+            </block>
         </view>
 
-        <view class="empty" wx:if="{{bills.length === 0 && !loading}}">
+        <view class="empty" wx:if="{{groupedBills.length === 0 && !loading}}">
             <text class="empty-icon">💰</text>
             <text class="empty-text">暂无账单</text>
+            <text class="empty-desc">分管理发送的账单将在这里显示</text>
         </view>
 
         <view class="loading" wx:if="{{loading}}">
             <text>加载中...</text>
         </view>
 
-        <view class="no-more" wx:if="{{!hasMore && bills.length > 0 && !loading}}">
+        <view class="no-more" wx:if="{{!hasMore && groupedBills.length > 0 && !loading}}">
             <text>— 没有更多了 —</text>
         </view>
 

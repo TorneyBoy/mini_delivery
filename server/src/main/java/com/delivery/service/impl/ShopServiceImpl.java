@@ -44,6 +44,8 @@ public class ShopServiceImpl implements ShopService {
     private final BillMapper billMapper;
     private final BillOrderMapper billOrderMapper;
     private final DriverMapper driverMapper;
+    private final DeliveryOrderMapper deliveryOrderMapper;
+    private final DeliveryListMapper deliveryListMapper;
 
     @Override
     public ShopResponse getShopInfo(Long shopId) {
@@ -434,6 +436,18 @@ public class ShopServiceImpl implements ShopService {
         response.setDriverName(driver != null ? driver.getName() : null);
         response.setReceivedAt(order.getReceivedAt());
         response.setCreatedAt(order.getCreatedAt());
+
+        // 获取送达照片
+        if (order.getStatus() == OrderStatus.COMPLETED.getCode()) {
+            DeliveryOrder deliveryOrder = deliveryOrderMapper.selectOne(
+                    new LambdaQueryWrapper<DeliveryOrder>().eq(DeliveryOrder::getOrderId, order.getId()));
+            if (deliveryOrder != null) {
+                DeliveryList deliveryList = deliveryListMapper.selectById(deliveryOrder.getDeliveryListId());
+                if (deliveryList != null) {
+                    response.setDeliveryPhoto(deliveryList.getDeliveryPhoto());
+                }
+            }
+        }
 
         if (items != null) {
             response.setItems(items.stream()

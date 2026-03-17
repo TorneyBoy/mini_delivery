@@ -36,6 +36,8 @@ public class AdminServiceImpl implements AdminService {
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
     private final BillMapper billMapper;
+    private final DeliveryListMapper deliveryListMapper;
+    private final DeliveryOrderMapper deliveryOrderMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -252,6 +254,90 @@ public class AdminServiceImpl implements AdminService {
         // 9. 账单统计
         Map<String, Object> billStats = getBillStatistics();
         result.put("billStats", billStats);
+
+        // 10. 按日期整理的送达数据统计（总管理只看送达数据）
+        List<Map<String, Object>> deliveryStatsByDate = getDeliveryStatsByDate(start, end);
+        result.put("deliveryStatsByDate", deliveryStatsByDate);
+
+        return result;
+    }
+
+    /**
+     * 按日期整理的送达数据统计（总管理视角）
+     * 用于了解商品销量趋势
+     */
+    private List<Map<String, Object>> getDeliveryStatsByDate(LocalDate start, LocalDate end) {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        // 获取所有商品
+        List<Product> products = productMapper.selectList(null);
+
+        // 按送达日期（完成时间）分组统计
+        LocalDate current = start;
+        while (!current.isAfter(end)) {
+            final LocalDate date = current;
+
+            // 获取当天完成的送货清单
+            List<DeliveryList> deliveryLists = deliveryListMapper.selectList(
+                    new LambdaQueryWrapper<DeliveryList>()
+                            .eq(DeliveryList::getStatus, 1) // 已完成
+                            .ge(DeliveryList::getCompletedAt, date.atStartOfDay())
+                            .lt(DeliveryList::getCompletedAt, date.plusDays(1).atStartOfDay()));
+
+            if (!deliveryLists.isEmpty()) {
+                // 获取这些送货清单关联的订单
+                List<Long> deliveryListIds = deliveryLists.stream().map(DeliveryList::getId)
+                        .collect(Collectors.toList());
+                List<DeliveryOrder> deliveryOrders = deliveryOrderMapper.selectList(
+                        new LambdaQueryWrapper<DeliveryOrder>().in(DeliveryOrder::getDeliveryListId, deliveryListIds));
+
+                List<Long> orderIds = deliveryOrders.stream().map(DeliveryOrder::getOrderId)
+                        .collect(Collectors.toList());
+
+                if (!orderIds.isEmpty()) {
+                    List<OrderItem> orderItems = orderItemMapper.selectList(
+                            new LambdaQueryWrapper<OrderItem>().in(OrderItem::getOrderId, orderIds));
+
+                    // 按商品分组统计
+                    Map<Long, BigDecimal> productQuantityMap = orderItems.stream()
+                            .collect(Collectors.groupingBy(OrderItem::getProductId,
+                                    Collectors.reducing(BigDecimal.ZERO, OrderItem::getQuantity, BigDecimal::add)));
+
+                    Map<String, Object> dateData = new HashMap<>();
+                    dateData.put("date", date.toString());
+
+                    List<Map<String, Object>> productStats = new ArrayList<>();
+                    for (Product product : products) {
+                        BigDecimal quantity = productQuantityMap.getOrDefault(product.getId(), BigDecimal.ZERO);
+                        if (quantity.compareTo(BigDecimal.ZERO) > 0) {
+                            Map<String, Object> productStat = new HashMap<>();
+                            productStat.put("productId", product.getId());
+                            productStat.put("productName", product.getName());
+                            productStat.put("unit", product.getUnit());
+                            productStat.put("deliveredQuantity", quantity);
+                            productStats.add(productStat);
+                        }
+                    }
+
+                    // 按商品名称排序
+                    productStats.sort((a, b) -> {
+                        String nameA = (String) a.get("productName");
+                        String nameB = (String) b.get("productName");
+                        if (nameA == null)
+                            return 1;
+                        if (nameB == null)
+                            return -1;
+                        return nameA.compareTo(nameB);
+                    });
+
+                    dateData.put("products", productStats);
+                    dateData.put("totalDeliveries", deliveryLists.size());
+                    result.add(dateData);
+                }
+            }
+
+            current = current.plusDays(1);
+        }
 
         return result;
     }

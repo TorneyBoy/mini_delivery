@@ -130,11 +130,158 @@ Page({
   },
 
   /**
+   * 跳转到商品图片审核
+   */
+  goToProductReview() {
+    wx.navigateTo({
+      url: '/pages/branch/product-review/product-review'
+    })
+  },
+
+  /**
    * 跳转到数据中心
    */
   goToDataCenter() {
     wx.navigateTo({
       url: '/pages/branch/data-center/data-center'
+    })
+  },
+
+  /**
+   * 跳转到注册申请管理
+   */
+  goToRegistrationRequests() {
+    wx.navigateTo({
+      url: '/pages/branch/registration-requests/registration-requests'
+    })
+  },
+
+  /**
+   * 跳转到账单统计
+   */
+  goToBillStatistics() {
+    wx.navigateTo({
+      url: '/pages/branch/bill-statistics/bill-statistics'
+    })
+  },
+
+  /**
+   * 分享店铺注册链接
+   */
+  shareShopRegister() {
+    const userInfo = app.globalData.userInfo
+    if (!userInfo || !userInfo.id) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 设置分享状态，用于onShareAppMessage
+    this._shareRole = 'SHOP'
+    this._shareBranchManagerId = userInfo.id
+
+    wx.showActionSheet({
+      itemList: ['转发给微信好友', '生成小程序码'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 转发给微信好友
+          wx.showModal({
+            title: '转发分享',
+            content: '请点击右上角"..."按钮，选择"转发"分享给好友',
+            showCancel: false
+          })
+        } else if (res.tapIndex === 1) {
+          // 生成小程序码
+          this.generateQrCode('SHOP', userInfo.id)
+        }
+      }
+    })
+  },
+
+  /**
+   * 分享司机注册链接
+   */
+  shareDriverRegister() {
+    const userInfo = app.globalData.userInfo
+    if (!userInfo || !userInfo.id) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 设置分享状态，用于onShareAppMessage
+    this._shareRole = 'DRIVER'
+    this._shareBranchManagerId = userInfo.id
+
+    wx.showActionSheet({
+      itemList: ['转发给微信好友', '生成小程序码'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 转发给微信好友
+          wx.showModal({
+            title: '转发分享',
+            content: '请点击右上角"..."按钮，选择"转发"分享给好友',
+            showCancel: false
+          })
+        } else if (res.tapIndex === 1) {
+          // 生成小程序码
+          this.generateQrCode('DRIVER', userInfo.id)
+        }
+      }
+    })
+  },
+
+  /**
+   * 生成小程序码
+   */
+  generateQrCode(role, branchManagerId) {
+    wx.showLoading({ title: '生成中...' })
+
+    wx.request({
+      url: `${app.globalData.baseUrl}/branch/generate-qrcode`,
+      method: 'POST',
+      header: {
+        'Authorization': `Bearer ${app.globalData.token}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        role: role,
+        branchManagerId: branchManagerId
+      },
+      success: (res) => {
+        wx.hideLoading()
+        if (res.data.code === 200) {
+          wx.previewImage({
+            urls: [res.data.data.qrCodeUrl],
+            current: res.data.data.qrCodeUrl
+          })
+        } else {
+          wx.showToast({
+            title: res.data.message || '生成失败',
+            icon: 'none'
+          })
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
+        })
+      }
+    })
+  },
+
+  /**
+   * 跳转到修改密码页面
+   */
+  goToChangePassword() {
+    wx.navigateTo({
+      url: '/pages/branch/change-password/change-password'
     })
   },
 
@@ -200,6 +347,24 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {
+    // 如果是通过分享按钮触发的
+    if (this._shareRole && this._shareBranchManagerId) {
+      const roleText = this._shareRole === 'SHOP' ? '店铺' : '司机'
+      return {
+        title: `邀请您注册成为${roleText}`,
+        path: `pages/register/register?role=${this._shareRole}&branchManagerId=${this._shareBranchManagerId}`,
+        success: () => {
+          // 清除分享状态
+          this._shareRole = null
+          this._shareBranchManagerId = null
+        }
+      }
+    }
 
+    // 默认分享
+    return {
+      title: '配送管理系统',
+      path: 'pages/login/login'
+    }
   }
 })

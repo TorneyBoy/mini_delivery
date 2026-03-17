@@ -54,6 +54,9 @@ public class OrderResponse {
     @Schema(description = "收货时间")
     private LocalDateTime receivedAt;
 
+    @Schema(description = "送达照片URL")
+    private String deliveryPhoto;
+
     @Schema(description = "创建时间")
     private LocalDateTime createdAt;
 

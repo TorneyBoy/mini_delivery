@@ -27,8 +27,8 @@
         <!-- 商品网格 -->
         <view class="product-grid">
             <view class="product-card" wx:for="{{products}}" wx:key="id">
-                <image class="product-image" 
-                       src="{{item.imageUrl ? baseUrl + item.imageUrl : '/assets/images/default-product.png'}}" 
+                <image class="product-image"
+                       src="{{item.imageUrl || '/assets/images/default-product.svg'}}"
                        mode="aspectFill"
                        lazy-load></image>
                 <view class="product-info">

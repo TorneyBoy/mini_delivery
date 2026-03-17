@@ -37,6 +37,11 @@ public class DeliveryList implements Serializable {
     private Integer status;
 
     /**
+     * 送达照片URL
+     */
+    private String deliveryPhoto;
+
+    /**
      * 完成时间
      */
     private LocalDateTime completedAt;

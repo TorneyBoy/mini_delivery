@@ -18,6 +18,8 @@ Page({
     priceTypeIndex: 0,
     status: 1,
     detail: {},
+    latitude: null,
+    longitude: null,
     priceTypes: [
       { value: 1, label: '老用户价' },
       { value: 2, label: '新用户价' }
@@ -61,6 +63,8 @@ Page({
             detail: data,
             name: data.name,
             address: data.address,
+            latitude: data.latitude,
+            longitude: data.longitude,
             phone: data.phone,
             showPrice: data.showPrice,
             priceType: data.priceType,
@@ -95,6 +99,40 @@ Page({
 
   onAddressInput(e) {
     this.setData({ address: e.detail.value })
+  },
+
+  /**
+   * 选择地图位置
+   */
+  chooseLocation() {
+    wx.chooseLocation({
+      success: (res) => {
+        // res.name: 位置名称
+        // res.address: 详细地址
+        // res.latitude: 纬度
+        // res.longitude: 经度
+        this.setData({
+          address: res.address || res.name,
+          latitude: res.latitude,
+          longitude: res.longitude
+        })
+      },
+      fail: (err) => {
+        // 用户取消选择不提示错误
+        if (err.errMsg.indexOf('auth deny') !== -1) {
+          wx.showModal({
+            title: '提示',
+            content: '需要授权位置信息才能使用地图选点功能，请在设置中开启',
+            confirmText: '去设置',
+            success: (modalRes) => {
+              if (modalRes.confirm) {
+                wx.openSetting()
+              }
+            }
+          })
+        }
+      }
+    })
   },
 
   onPhoneInput(e) {
@@ -136,7 +174,7 @@ Page({
    * 提交
    */
   handleSubmit() {
-    const { mode, id, name, address, phone, password, showPrice, priceType, status } = this.data
+    const { mode, id, name, address, phone, password, showPrice, priceType, status, latitude, longitude } = this.data
 
     // 验证
     if (!name) {
@@ -173,6 +211,8 @@ Page({
         data: {
           name,
           address,
+          latitude,
+          longitude,
           phone,
           password
         },
@@ -209,6 +249,8 @@ Page({
         data: {
           name,
           address,
+          latitude,
+          longitude,
           phone,
           showPrice,
           priceType,

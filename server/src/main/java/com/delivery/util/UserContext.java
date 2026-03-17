@@ -15,12 +15,35 @@ public class UserContext {
     public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() != null) {
-            if (authentication.getPrincipal() instanceof UserPrincipal) {
-                return ((UserPrincipal) authentication.getPrincipal()).getId();
+            Object principal = authentication.getPrincipal();
+
+            // 直接检查是否是 UserPrincipal 类型
+            if (principal instanceof UserPrincipal) {
+                return ((UserPrincipal) principal).getId();
             }
+
+            // 尝试通过反射获取 id 属性（处理类加载器不一致的情况）
+            try {
+                Class<?> principalClass = principal.getClass();
+                if (principalClass.getName().contains("UserPrincipal")) {
+                    // 尝试通过 getter 方法获取 id
+                    try {
+                        java.lang.reflect.Method getIdMethod = principalClass.getMethod("getId");
+                        Object id = getIdMethod.invoke(principal);
+                        if (id instanceof Long) {
+                            return (Long) id;
+                        }
+                    } catch (NoSuchMethodException e) {
+                        // 忽略，尝试其他方式
+                    }
+                }
+            } catch (Exception e) {
+                // 忽略反射异常
+            }
+
             // 兼容字符串类型
             try {
-                return Long.parseLong(authentication.getPrincipal().toString());
+                return Long.parseLong(principal.toString());
             } catch (NumberFormatException e) {
                 return null;
             }

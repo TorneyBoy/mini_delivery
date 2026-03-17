@@ -1,18 +1,25 @@
 package com.delivery.controller;
 
 import com.delivery.common.Result;
+import com.delivery.dto.request.OrderItemModifyRequest;
+import com.delivery.dto.request.ProductImageRequestDto;
 import com.delivery.dto.response.DeliveryHistoryResponse;
 import com.delivery.dto.response.DeliveryListResponse;
 import com.delivery.dto.response.DriverResponse;
 import com.delivery.dto.response.DriverStatisticsResponse;
+import com.delivery.dto.response.OrderDetailResponse;
 import com.delivery.dto.response.OrderResponse;
 import com.delivery.dto.response.PickingListResponse;
+import com.delivery.dto.response.ProductImageRequestResponse;
+import com.delivery.dto.response.ProductResponse;
 import com.delivery.security.UserPrincipal;
 import com.delivery.service.DriverService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +29,7 @@ import java.util.List;
 /**
  * 司机控制器
  */
+@Slf4j
 @Tag(name = "司机", description = "司机相关接口")
 @RestController
 @RequestMapping("/api/driver")
@@ -119,13 +127,15 @@ public class DriverController {
         return Result.success(list);
     }
 
-    @Operation(summary = "完成送货", description = "标记送货完成")
+    @Operation(summary = "完成送货", description = "标记送货完成，需要上传送达照片")
     @PutMapping("/delivery-list/{id}/complete")
     @PreAuthorize("hasRole('DRIVER')")
     public Result<Void> completeDelivery(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable Long id) {
-        driverService.completeDelivery(userPrincipal.getId(), id);
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> request) {
+        String deliveryPhoto = request.get("deliveryPhoto");
+        driverService.completeDelivery(userPrincipal.getId(), id, deliveryPhoto);
         return Result.success();
     }
 
@@ -146,5 +156,58 @@ public class DriverController {
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         List<DeliveryHistoryResponse> history = driverService.getDeliveryHistory(userPrincipal.getId());
         return Result.success(history);
+    }
+
+    // ==================== 商品图片上传 ====================
+
+    @Operation(summary = "提交商品图片请求", description = "司机提交商品图片上传请求")
+    @PostMapping("/product-image-request")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<Void> submitProductImageRequest(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody ProductImageRequestDto request) {
+        driverService.submitProductImageRequest(userPrincipal.getId(), request);
+        return Result.success();
+    }
+
+    @Operation(summary = "获取我的商品图片请求列表", description = "获取司机提交的商品图片请求列表")
+    @GetMapping("/product-image-requests")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<List<ProductImageRequestResponse>> getMyProductImageRequests(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<ProductImageRequestResponse> list = driverService.getMyProductImageRequests(userPrincipal.getId());
+        return Result.success(list);
+    }
+
+    // ==================== 拣货修改订单 ====================
+
+    @Operation(summary = "获取已选订单详情", description = "获取已选订单的详细信息，用于拣货时修改")
+    @GetMapping("/selected-orders-detail")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<List<OrderDetailResponse>> getSelectedOrdersDetail(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<OrderDetailResponse> orders = driverService.getSelectedOrdersDetail(userPrincipal.getId());
+        return Result.success(orders);
+    }
+
+    @Operation(summary = "修改订单商品", description = "拣货时修改订单商品数量或添加新商品")
+    @PostMapping("/modify-order-items")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<Void> modifyOrderItems(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody OrderItemModifyRequest request) {
+        driverService.modifyOrderItems(userPrincipal.getId(), request);
+        return Result.success();
+    }
+
+    @Operation(summary = "获取可用商品列表", description = "获取商品库中可添加的商品列表")
+    @GetMapping("/available-products")
+    @PreAuthorize("hasRole('DRIVER')")
+    public Result<List<ProductResponse>> getAvailableProducts(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        log.info("收到获取可用商品列表请求，用户ID: {}", userPrincipal.getId());
+        List<ProductResponse> products = driverService.getAvailableProducts(userPrincipal.getId());
+        log.info("返回商品数量: {}", products.size());
+        return Result.success(products);
     }
 }

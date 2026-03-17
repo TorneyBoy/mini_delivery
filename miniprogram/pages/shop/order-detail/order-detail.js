@@ -38,6 +38,11 @@ Page({
 
     app.request({ url: `/shop/orders/${id}` })
       .then(data => {
+        // 处理图片URL
+        if (data.deliveryPhoto) {
+          data.deliveryPhoto = app.getImageUrl(data.deliveryPhoto);
+        }
+
         // 检查是否可以修改
         const canModify = this.checkCanModify(data);
         let modifyDeadline = '';
@@ -139,5 +144,16 @@ Page({
   // 返回订单列表
   goBack() {
     wx.navigateBack();
+  },
+
+  // 预览送达照片
+  onPreviewPhoto() {
+    const order = this.data.order;
+    if (!order || !order.deliveryPhoto) return;
+
+    wx.previewImage({
+      current: order.deliveryPhoto,
+      urls: [order.deliveryPhoto]
+    });
   }
 });

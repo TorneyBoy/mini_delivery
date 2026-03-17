@@ -3,7 +3,6 @@ const app = getApp();
 
 Page({
     data: {
-        baseUrl: 'http://localhost:8081', // 后端服务器地址
         shopInfo: null,
         categories: [],
         products: [],
@@ -81,6 +80,10 @@ Page({
                 products.forEach(p => {
                     p.displayPrice = this.data.priceType === 1 ? p.oldPrice : p.newPrice;
                     p.quantity = this.data.cart[p.id] || 0;
+                    // 处理图片URL
+                    if (p.imageUrl) {
+                        p.imageUrl = app.getImageUrl(p.imageUrl);
+                    }
                 });
 
                 const newProducts = refresh ? products : [...this.data.products, ...products];

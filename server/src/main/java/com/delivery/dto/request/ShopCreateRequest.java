@@ -20,6 +20,12 @@ public class ShopCreateRequest {
     @Schema(description = "地址", example = "北京市朝阳区xxx街道")
     private String address;
 
+    @Schema(description = "纬度", example = "39.908823")
+    private Double latitude;
+
+    @Schema(description = "经度", example = "116.397470")
+    private Double longitude;
+
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
     @Schema(description = "手机号", example = "13800000002")

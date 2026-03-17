@@ -223,3 +223,39 @@
 .logout-icon {
     font-size: 36rpx;
 }
+
+/* 功能菜单 */
+.menu-section {
+    margin: 20rpx;
+    background: #fff;
+    border-radius: 16rpx;
+    padding: 24rpx;
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 24rpx 0;
+    border-bottom: 1rpx solid #f0f0f0;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-icon {
+    font-size: 36rpx;
+    margin-right: 20rpx;
+}
+
+.menu-text {
+    flex: 1;
+    font-size: 30rpx;
+    color: #333;
+}
+
+.menu-arrow {
+    font-size: 28rpx;
+    color: #999;
+}

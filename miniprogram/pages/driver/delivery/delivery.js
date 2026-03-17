@@ -7,7 +7,13 @@ Page({
     loading: false,
     completing: false,
     showDetail: false,
-    currentDelivery: null
+    currentDelivery: null,
+    // 送达照片相关
+    showPhotoModal: false,
+    currentDeliveryId: null,
+    currentShopName: '',
+    tempPhotoPath: '',
+    showPreview: false
   },
 
   onLoad() {
@@ -56,6 +62,11 @@ Page({
       showDetail: false,
       currentDelivery: null
     });
+  },
+
+  // 阻止事件冒泡（空方法）
+  stopPropagation() {
+    // 阻止事件冒泡，不做任何处理
   },
 
   // 打开地图导航
@@ -118,31 +129,163 @@ Page({
     });
   },
 
-  // 完成送货
+  // 完成送货 - 显示选择照片方式弹窗
   onCompleteDelivery(e) {
     const { id, name } = e.currentTarget.dataset;
 
-    wx.showModal({
-      title: '确认送达',
-      content: `确定已将货物送达「${name}」吗？`,
+    this.setData({
+      showPhotoModal: true,
+      currentDeliveryId: id,
+      currentShopName: name,
+      tempPhotoPath: ''
+    });
+  },
+
+  // 关闭照片选择弹窗
+  onClosePhotoModal() {
+    this.setData({
+      showPhotoModal: false,
+      currentDeliveryId: null,
+      currentShopName: '',
+      tempPhotoPath: ''
+    });
+  },
+
+  // 拍照
+  onTakePhoto() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['camera'],
       success: (res) => {
-        if (res.confirm) {
-          this.submitCompleteDelivery(id);
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        this.setData({
+          tempPhotoPath: tempFilePath,
+          showPhotoModal: false,
+          showPreview: true
+        });
+      },
+      fail: (err) => {
+        if (err.errMsg.indexOf('auth deny') !== -1) {
+          wx.showModal({
+            title: '提示',
+            content: '需要授权相机权限才能拍照留证，请在设置中开启',
+            confirmText: '去设置',
+            success: (modalRes) => {
+              if (modalRes.confirm) {
+                wx.openSetting();
+              }
+            }
+          });
         }
       }
     });
   },
 
-  // 提交完成送货
-  submitCompleteDelivery(deliveryId) {
+  // 从图库选择
+  onChooseFromAlbum() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album'],
+      success: (res) => {
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        this.setData({
+          tempPhotoPath: tempFilePath,
+          showPhotoModal: false,
+          showPreview: true
+        });
+      },
+      fail: (err) => {
+        if (err.errMsg.indexOf('auth deny') !== -1) {
+          wx.showModal({
+            title: '提示',
+            content: '需要授权相册权限才能选择照片，请在设置中开启',
+            confirmText: '去设置',
+            success: (modalRes) => {
+              if (modalRes.confirm) {
+                wx.openSetting();
+              }
+            }
+          });
+        }
+      }
+    });
+  },
+
+  // 预览界面 - 重新选择
+  onReselectPhoto() {
+    this.setData({
+      showPreview: false,
+      showPhotoModal: true
+    });
+  },
+
+  // 预览界面 - 确认提交
+  onConfirmSubmit() {
+    const { currentDeliveryId, tempPhotoPath } = this.data;
+
+    if (!tempPhotoPath) {
+      wx.showToast({ title: '请先选择照片', icon: 'none' });
+      return;
+    }
+
+    this.uploadPhotoAndComplete(currentDeliveryId, tempPhotoPath);
+  },
+
+  // 关闭预览界面
+  onClosePreview() {
+    this.setData({
+      showPreview: false,
+      tempPhotoPath: ''
+    });
+  },
+
+  // 上传照片并完成送货
+  uploadPhotoAndComplete(deliveryId, tempFilePath) {
     this.setData({ completing: true });
 
+    // 先上传照片
+    wx.uploadFile({
+      url: `${app.globalData.baseUrl}/upload/image`,
+      filePath: tempFilePath,
+      name: 'file',
+      header: {
+        'Authorization': `Bearer ${app.globalData.token}`
+      },
+      success: (uploadRes) => {
+        const data = JSON.parse(uploadRes.data);
+        if (data.code === 200) {
+          const photoUrl = data.data.url;
+          // 提交完成送货
+          this.submitCompleteDelivery(deliveryId, photoUrl);
+        } else {
+          wx.showToast({ title: data.message || '上传失败', icon: 'none' });
+          this.setData({ completing: false });
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '上传照片失败', icon: 'none' });
+        this.setData({ completing: false });
+      }
+    });
+  },
+
+  // 提交完成送货
+  submitCompleteDelivery(deliveryId, deliveryPhoto) {
     app.request({
       url: `/driver/delivery-list/${deliveryId}/complete`,
-      method: 'PUT'
+      method: 'PUT',
+      data: { deliveryPhoto }
     })
       .then(() => {
         wx.showToast({ title: '送达成功', icon: 'success' });
+        this.setData({
+          showPreview: false,
+          tempPhotoPath: '',
+          currentDeliveryId: null,
+          currentShopName: ''
+        });
         this.loadDeliveryList();
       })
       .catch(err => {

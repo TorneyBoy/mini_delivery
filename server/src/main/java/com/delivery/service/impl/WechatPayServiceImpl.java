@@ -19,6 +19,8 @@ import com.wechat.pay.java.service.payments.jsapi.model.*;
 import com.wechat.pay.java.service.payments.model.Transaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +29,11 @@ import java.time.LocalDateTime;
 
 /**
  * 微信支付服务实现
+ * 只有在配置了微信支付相关参数时才启用
  */
 @Slf4j
 @Service
+@ConditionalOnBean(JsapiServiceExtension.class)
 @RequiredArgsConstructor
 public class WechatPayServiceImpl implements WechatPayService {
 

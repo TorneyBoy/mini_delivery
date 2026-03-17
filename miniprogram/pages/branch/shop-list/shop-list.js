@@ -13,7 +13,8 @@ Page({
     hasMore: true,
     loading: false,
     searchKey: '',
-    needRefresh: false
+    needRefresh: false,
+    shareItem: null
   },
 
   /**
@@ -160,6 +161,38 @@ Page({
   },
 
   /**
+   * 分享店铺注册链接
+   */
+  handleShare(e) {
+    const item = e.currentTarget.dataset.item
+    this.setData({ shareItem: item })
+    // 触发分享
+  },
+
+  /**
+   * 分享给店铺
+   */
+  onShareAppMessage() {
+    const item = this.data.shareItem
+    const userInfo = app.globalData.userInfo
+    const branchManagerId = userInfo ? userInfo.id : null
+
+    if (item && branchManagerId) {
+      return {
+        title: `邀请您注册成为店铺【${item.name}】`,
+        path: `/pages/register/register?role=SHOP&branchManagerId=${branchManagerId}&name=${encodeURIComponent(item.name)}&phone=${item.phone}&address=${encodeURIComponent(item.address || '')}`,
+        success: () => {
+          wx.showToast({ title: '分享成功', icon: 'success' })
+        }
+      }
+    }
+    return {
+      title: '邀请您注册店铺',
+      path: `/pages/register/register?role=SHOP&branchManagerId=${branchManagerId || ''}`
+    }
+  },
+
+  /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh() {
@@ -195,10 +228,4 @@ Page({
 
   },
 
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
 })

@@ -21,6 +21,12 @@ public class ShopResponse {
     @Schema(description = "地址")
     private String address;
 
+    @Schema(description = "纬度")
+    private Double latitude;
+
+    @Schema(description = "经度")
+    private Double longitude;
+
     @Schema(description = "手机号")
     private String phone;
 

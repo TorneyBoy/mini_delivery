@@ -12,7 +12,7 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./server/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./server/src/main/resources/db/rebuild_database.sql:/docker-entrypoint-initdb.d/init.sql:ro
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     networks:
       - delivery-network
@@ -26,7 +26,7 @@ services:
   backend:
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     container_name: delivery-backend
     restart: unless-stopped
     depends_on:
@@ -37,13 +37,37 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: mima0221
       TZ: Asia/Shanghai
+      # 文件上传路径配置
+      FILE_UPLOAD_PATH: /data/upload/
     ports:
       - "8081:8081"
+    volumes:
+      # 图片文件持久化存储
+      - upload_data:/data/upload
+    networks:
+      - delivery-network
+
+  # Nginx 反向代理（生产环境使用）
+  nginx:
+    image: nginx:alpine
+    container_name: delivery-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      # 挂载图片目录，供Nginx直接提供静态文件服务
+      - upload_data:/data/upload:ro
+    depends_on:
+      - backend
     networks:
       - delivery-network
 
 volumes:
   mysql_data:
+  upload_data:
 
 
 networks:

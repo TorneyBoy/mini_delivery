@@ -31,6 +31,12 @@ public class DeliveryListResponse {
     @Schema(description = "状态 0-待送货 1-已完成")
     private Integer status;
 
+    @Schema(description = "送达照片URL")
+    private String deliveryPhoto;
+
+    @Schema(description = "完成时间")
+    private java.time.LocalDateTime completedAt;
+
     @Schema(description = "商品汇总列表")
     private List<DeliveryItem> items;
 

@@ -1,10 +1,15 @@
 <!-- pages/driver/picking/picking.wxml -->
+<wxs src="./picking.wxs" module="utils" />
 <view class="picking-container">
     <!-- 顶部标题栏 -->
     <view class="header-section">
         <view class="header-bar">
             <text class="header-title">待拣货清单</text>
             <view class="header-actions">
+                <view class="modify-btn" bindtap="onOpenModifyModal" wx:if="{{selectedOrders.length > 0}}">
+                    <text class="modify-icon">✏️</text>
+                    <text class="modify-text">修改订单</text>
+                </view>
                 <view class="order-manage-btn" bindtap="onToggleOrderManage" wx:if="{{selectedOrders.length > 0}}">
                     <text class="manage-icon">📋</text>
                     <text class="manage-text">订单管理</text>
@@ -45,6 +50,141 @@
                 </view>
                 <view class="empty-orders" wx:if="{{selectedOrders.length === 0}}">
                     <text>暂无已选订单</text>
+                </view>
+            </scroll-view>
+        </view>
+    </view>
+
+    <!-- 修改订单弹窗 -->
+    <view class="modify-modal {{showModifyModal ? 'show' : ''}}" catchtap="onCloseModifyModal">
+        <view class="modify-content" catchtap="stopPropagation">
+            <view class="modal-header">
+                <text class="modal-title">修改订单商品</text>
+                <view class="close-btn" catchtap="onCloseModifyModal">×</view>
+            </view>
+            
+            <!-- 选择订单 -->
+            <view class="modify-section">
+                <view class="section-header">
+                    <text class="section-title">选择要修改的订单</text>
+                    <view class="select-all-btn" bindtap="onToggleSelectAll">
+                        <text>{{selectedOrderIds.length === orderDetails.length ? '取消全选' : '全选'}}</text>
+                    </view>
+                </view>
+                <scroll-view class="order-select-list" scroll-y>
+                    <view class="order-select-item {{utils.isOrderSelected(selectedOrderIds, item.id) ? 'selected' : ''}}"
+                          wx:for="{{orderDetails}}"
+                          wx:key="id"
+                          data-order-index="{{index}}">
+                        <view class="order-checkbox" bindtap="onToggleOrderSelect" data-id="{{item.id}}">
+                            <text wx:if="{{utils.isOrderSelected(selectedOrderIds, item.id)}}">✓</text>
+                        </view>
+                        <view class="order-info-wrapper">
+                            <view class="order-info" bindtap="onToggleOrderSelect" data-id="{{item.id}}">
+                                <text class="order-shop-name">{{item.shopName}}</text>
+                                <text class="order-amount">¥{{item.totalAmount}}</text>
+                            </view>
+                            <!-- 订单商品列表 -->
+                            <view class="order-items-detail" wx:if="{{utils.isOrderSelected(selectedOrderIds, item.id)}}">
+                                <view class="order-item-row" wx:for="{{item.items}}" wx:for-item="orderItem" wx:key="id">
+                                    <text class="item-name">{{orderItem.productName}}</text>
+                                    <view class="item-quantity-control">
+                                        <view class="qty-btn minus" catchtap="onReduceOrderItemFromOrder"
+                                              data-orderid="{{item.id}}"
+                                              data-productid="{{orderItem.productId}}"
+                                              data-productname="{{orderItem.productName}}"
+                                              data-currentqty="{{orderItem.quantity}}">-</view>
+                                        <view class="qty-display">
+                                            <input class="qty-input" type="digit" value="{{orderItem.quantity}}"
+                                                   catchblur="onInputOrderItemQuantity"
+                                                   data-orderid="{{item.id}}"
+                                                   data-productid="{{orderItem.productId}}"
+                                                   data-productname="{{orderItem.productName}}"
+                                                   data-oldqty="{{orderItem.quantity}}" />
+                                            <text class="qty-unit">{{orderItem.unit || '斤'}}</text>
+                                        </view>
+                                        <view class="qty-btn plus" catchtap="onIncreaseOrderItemFromOrder"
+                                              data-orderid="{{item.id}}"
+                                              data-productid="{{orderItem.productId}}"
+                                              data-productname="{{orderItem.productName}}"
+                                              data-currentqty="{{orderItem.quantity}}">+</view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+
+            <!-- 修改内容 -->
+            <view class="modify-section">
+                <view class="section-header">
+                    <text class="section-title">修改内容</text>
+                    <view class="add-product-btn" bindtap="onOpenProductSelect">
+                        <text>+ 添加商品</text>
+                    </view>
+                </view>
+                
+                <!-- 修改项列表 -->
+                <view class="modify-items-list" wx:if="{{modifyItems.length > 0}}">
+                    <view class="modify-item" wx:for="{{modifyItems}}" wx:key="index">
+                        <view class="modify-item-info">
+                            <text class="modify-item-name">{{item.productName}}</text>
+                            <text class="modify-item-type {{item.type}}">{{item.type === 'add' ? '新增' : (item.quantityChange > 0 ? '增加' : '减少')}}</text>
+                            <text class="modify-item-target" wx:if="{{item.targetShopName}}">({{item.targetShopName}})</text>
+                        </view>
+                        <view class="modify-item-actions">
+                            <view class="quantity-btn minus" catchtap="onModifyItemQuantity" data-index="{{index}}" data-delta="{{-0.5}}">-</view>
+                            <view class="qty-display">
+                                <input class="quantity-input" type="digit" value="{{item.quantityChange}}"
+                                       catchblur="onInputModifyItemQuantity" data-index="{{index}}" />
+                                <text class="qty-unit">{{item.unit || '斤'}}</text>
+                            </view>
+                            <view class="quantity-btn plus" catchtap="onModifyItemQuantity" data-index="{{index}}" data-delta="{{0.5}}">+</view>
+                            <view class="remove-item-btn" catchtap="onRemoveModifyItem" data-index="{{index}}">×</view>
+                        </view>
+                    </view>
+                </view>
+                
+                <view class="empty-modify" wx:else>
+                    <text>暂无修改内容，点击"添加商品"或调整订单商品数量</text>
+                </view>
+            </view>
+
+            <!-- 提交按钮 -->
+            <view class="modify-footer">
+                <button class="btn-cancel" bindtap="onCloseModifyModal">取消</button>
+                <button class="btn-submit {{modifyLoading ? 'loading' : ''}}" bindtap="onSubmitModify" disabled="{{modifyLoading}}">
+                    <text wx:if="{{!modifyLoading}}">确认修改</text>
+                    <text wx:else>提交中...</text>
+                </button>
+            </view>
+        </view>
+    </view>
+
+    <!-- 商品选择弹窗 -->
+    <view class="product-select-modal {{showProductSelect ? 'show' : ''}}" catchtap="onCloseProductSelect">
+        <view class="product-select-content" catchtap="stopPropagation">
+            <view class="modal-header">
+                <text class="modal-title">选择商品</text>
+                <view class="close-btn" catchtap="onCloseProductSelect">×</view>
+            </view>
+            <scroll-view class="product-list" scroll-y>
+                <view class="product-item" 
+                      wx:for="{{availableProducts}}" 
+                      wx:key="id"
+                      bindtap="onSelectProduct"
+                      data-product="{{item}}">
+                    <view class="product-info">
+                        <text class="product-name">{{item.name}}</text>
+                        <text class="product-category">{{item.category}}</text>
+                    </view>
+                    <view class="product-price">
+                        <text>¥{{item.oldPrice}}/{{item.unit}}</text>
+                    </view>
+                </view>
+                <view class="empty-products" wx:if="{{availableProducts.length === 0}}">
+                    <text>暂无可用商品</text>
                 </view>
             </scroll-view>
         </view>

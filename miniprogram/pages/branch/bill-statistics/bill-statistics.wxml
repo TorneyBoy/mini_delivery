@@ -1,0 +1,226 @@
+<!--pages/branch/bill-statistics/bill-statistics.wxml-->
+<view class="container">
+  <!-- Tab切换 -->
+  <view class="tabs">
+    <view class="tab-item {{activeTab === 'ungenerated' ? 'active' : ''}}" 
+          data-tab="ungenerated" bindtap="switchTab">
+      今日未生成账单店铺
+    </view>
+    <view class="tab-item {{activeTab === 'history' ? 'active' : ''}}" 
+          data-tab="history" bindtap="switchTab">
+      历史账单
+    </view>
+  </view>
+
+  <!-- 今日未生成账单店铺 -->
+  <view class="content" wx:if="{{activeTab === 'ungenerated'}}">
+    <view class="section-header">
+      <text class="section-title">今日待处理店铺</text>
+      <text class="section-count">共{{ungeneratedShops.length}}家</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading">
+      <text>加载中...</text>
+    </view>
+
+    <view wx:elif="{{ungeneratedShops.length === 0}}" class="empty">
+      <text>今日所有店铺账单已生成</text>
+    </view>
+
+    <view wx:else class="shop-list">
+      <view class="shop-card" wx:for="{{ungeneratedShops}}" wx:key="id">
+        <view class="shop-info">
+          <view class="shop-name">{{item.name}}</view>
+          <view class="shop-detail">
+            <text>订单数: {{item.orderCount}}</text>
+          </view>
+          <view class="shop-contact">
+            <text>{{item.phone}}</text>
+            <text wx:if="{{item.address}}"> | {{item.address}}</text>
+          </view>
+        </view>
+        <view class="shop-actions">
+          <view class="btn-generate" data-shop="{{item}}" bindtap="generateBill">
+            生成账单
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 历史账单 -->
+  <view class="content" wx:if="{{activeTab === 'history'}}">
+    <!-- 日期筛选 -->
+    <view class="date-filter">
+      <view class="date-item">
+        <text>开始日期</text>
+        <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="date-picker">{{startDate}}</view>
+        </picker>
+      </view>
+      <view class="date-item">
+        <text>结束日期</text>
+        <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+          <view class="date-picker">{{endDate}}</view>
+        </picker>
+      </view>
+      <view class="btn-filter" bindtap="filterHistory">筛选</view>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading">
+      <text>加载中...</text>
+    </view>
+
+    <view wx:elif="{{historyShops.length === 0}}" class="empty">
+      <text>暂无历史账单</text>
+    </view>
+
+    <view wx:else class="history-list">
+      <view class="history-card" wx:for="{{historyShops}}" wx:key="shopId" 
+            data-shop="{{item}}" bindtap="viewShopBills">
+        <view class="history-main">
+          <view class="shop-name">{{item.shopName}}</view>
+          <view class="bill-summary">
+            <text>账单数: {{item.billCount}}</text>
+            <text> | </text>
+            <text>总金额: ¥{{item.totalAmount}}</text>
+          </view>
+          <view class="unpaid-info" wx:if="{{item.unpaidCount > 0}}">
+            <text class="unpaid-text">待支付: {{item.unpaidCount}}笔，¥{{item.unpaidAmount}}</text>
+          </view>
+        </view>
+        <view class="history-arrow">
+          <text>></text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 店铺账单列表弹窗 -->
+  <view class="modal-mask" wx:if="{{showShopBills}}" bindtap="closeShopBills">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">{{currentShop.shopName}} - 历史账单</text>
+        <text class="modal-close" bindtap="closeShopBills">×</text>
+      </view>
+      
+      <view class="modal-body">
+        <view wx:if="{{loading}}" class="loading">
+          <text>加载中...</text>
+        </view>
+
+        <view wx:elif="{{currentShopBills.length === 0}}" class="empty">
+          <text>暂无账单记录</text>
+        </view>
+
+        <view wx:else class="bill-list">
+          <view class="bill-item" wx:for="{{currentShopBills}}" wx:key="id">
+            <view class="bill-main" data-bill="{{item}}" bindtap="viewBillDetail">
+              <view class="bill-date">{{item.billDate}}</view>
+              <view class="bill-info">
+                <text class="bill-amount">¥{{item.totalAmount}}</text>
+                <text class="bill-orders">{{item.orderCount}}笔订单</text>
+              </view>
+              <view class="bill-status">
+                <text class="status-tag {{item.status === 0 ? 'status-pending' : 'status-paid'}}">
+                  {{item.statusText}}
+                </text>
+                <text class="send-tag {{item.sendStatus === 1 ? 'sent' : ''}}" 
+                      wx:if="{{item.sendStatus !== undefined}}">
+                  {{item.sendStatus === 1 ? '已发送' : '未发送'}}
+                </text>
+              </view>
+            </view>
+            <view class="bill-actions">
+              <view class="btn-send" wx:if="{{item.sendStatus !== 1}}" 
+                    data-bill="{{item}}" catchtap="sendBillNotice">
+                发送通知
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 账单详情弹窗 -->
+  <view class="modal-mask" wx:if="{{showBillDetail}}" bindtap="closeBillDetail">
+    <view class="modal-content bill-detail-modal" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">账单详情</text>
+        <text class="modal-close" bindtap="closeBillDetail">×</text>
+      </view>
+      
+      <view class="modal-body">
+        <view wx:if="{{loading}}" class="loading">
+          <text>加载中...</text>
+        </view>
+
+        <view wx:elif="{{currentBill}}" class="bill-detail">
+          <!-- 账单基本信息 -->
+          <view class="detail-section">
+            <view class="detail-row">
+              <text class="detail-label">账单号</text>
+              <text class="detail-value">{{currentBill.billNo}}</text>
+            </view>
+            <view class="detail-row">
+              <text class="detail-label">店铺</text>
+              <text class="detail-value">{{currentBill.shopName}}</text>
+            </view>
+            <view class="detail-row">
+              <text class="detail-label">账单日期</text>
+              <text class="detail-value">{{currentBill.billDate}}</text>
+            </view>
+            <view class="detail-row">
+              <text class="detail-label">总金额</text>
+              <text class="detail-value amount">¥{{currentBill.totalAmount}}</text>
+            </view>
+            <view class="detail-row">
+              <text class="detail-label">状态</text>
+              <text class="detail-value">
+                <text class="status-tag {{currentBill.status === 0 ? 'status-pending' : 'status-paid'}}">
+                  {{currentBill.statusText}}
+                </text>
+              </text>
+            </view>
+            <view class="detail-row" wx:if="{{currentBill.sentAt}}">
+              <text class="detail-label">发送时间</text>
+              <text class="detail-value">{{currentBill.sentAt}}</text>
+            </view>
+            <view class="detail-row" wx:if="{{currentBill.paidAt}}">
+              <text class="detail-label">支付时间</text>
+              <text class="detail-value">{{currentBill.paidAt}}</text>
+            </view>
+          </view>
+
+          <!-- 订单明细 -->
+          <view class="orders-section">
+            <view class="section-title">订单明细 ({{currentBill.orders.length}}笔)</view>
+            
+            <view class="order-item" wx:for="{{currentBill.orders}}" wx:key="id">
+              <view class="order-header">
+                <text class="order-no">{{item.orderNo}}</text>
+                <text class="order-amount">¥{{item.totalAmount}}</text>
+              </view>
+              <view class="order-info">
+                <text>收货日期: {{item.deliveryDate || '-'}}</text>
+              </view>
+              <view class="order-items">
+                <view class="item-row" wx:for="{{item.items}}" wx:for-item="product" wx:key="*this">
+                  <text class="item-name">{{product.productName}}</text>
+                  <text class="item-qty">x{{product.quantity}}</text>
+                  <text class="item-price">¥{{product.amount}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 下载按钮 -->
+          <view class="detail-actions">
+            <view class="btn-download" bindtap="downloadBill">复制账单信息</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -26,8 +26,10 @@ Page({
         shopTrend: [],
         orderStatusDist: {},
         billStats: {},
+        // 按日期整理的送达数据
+        deliveryStatsByDate: [],
         loading: false,
-        activeTab: 'overview', // overview, product, branch, shop
+        activeTab: 'overview', // overview, product, branch, shop, deliveryStats
         showDatePicker: false
     },
 
@@ -115,7 +117,8 @@ Page({
                         revenueByShop: data.revenueByShop || [],
                         shopTrend: data.shopTrend || [],
                         orderStatusDist: data.orderStatusDist || {},
-                        billStats: data.billStats || {}
+                        billStats: data.billStats || {},
+                        deliveryStatsByDate: data.deliveryStatsByDate || []
                     })
                 }
             },

@@ -25,8 +25,14 @@ Page({
         revenueByShop: [],
         orderStatusDist: {},
         billStats: {},
+        // 门店商品统计
+        shopProductStats: [],
+        // 按送达日期整理的下单数据（预约订单）
+        orderStatsByDeliveryDate: [],
+        // 按日期整理的送达数据
+        deliveryStatsByDate: [],
         loading: false,
-        activeTab: 'overview', // overview, product, shop
+        activeTab: 'overview', // overview, product, shop, shopProduct, orderStats, deliveryStats
         showDatePicker: false
     },
 
@@ -64,62 +70,132 @@ Page({
         this.setData({ loading: true })
         wx.showLoading({ title: '加载中...' })
 
-        wx.request({
-            url: `${app.globalData.baseUrl}/branch/data-center`,
-            method: 'GET',
-            data: {
-                startDate: this.data.startDate,
-                endDate: this.data.endDate
-            },
-            header: {
-                'Authorization': `Bearer ${app.globalData.token}`
-            },
-            success: (res) => {
-                if (res.data.code === 200) {
-                    const data = res.data.data
+        // 并行加载两个接口
+        Promise.all([
+            this.loadMainData(),
+            this.loadShopProductStats()
+        ]).then(() => {
+            wx.hideLoading()
+            this.setData({ loading: false })
+        }).catch(() => {
+            wx.hideLoading()
+            this.setData({ loading: false })
+        })
+    },
 
-                    // 格式化金额
-                    if (data.overview) {
-                        data.overview.totalAmount = this.formatMoney(data.overview.totalAmount || 0)
-                        data.overview.completionRate = this.formatRate(data.overview.completionRate || 0)
+    /**
+     * 加载主要数据
+     */
+    loadMainData() {
+        return new Promise((resolve, reject) => {
+            wx.request({
+                url: `${app.globalData.baseUrl}/branch/data-center`,
+                method: 'GET',
+                data: {
+                    startDate: this.data.startDate,
+                    endDate: this.data.endDate
+                },
+                header: {
+                    'Authorization': `Bearer ${app.globalData.token}`
+                },
+                success: (res) => {
+                    if (res.data.code === 200) {
+                        const data = res.data.data
+                        console.log('数据中心返回数据:', data)
+                        console.log('预约订单数据:', data.orderStatsByDeliveryDate)
+                        console.log('送达数据:', data.deliveryStatsByDate)
+
+                        // 格式化金额
+                        if (data.overview) {
+                            data.overview.totalAmount = this.formatMoney(data.overview.totalAmount || 0)
+                            data.overview.completionRate = this.formatRate(data.overview.completionRate || 0)
+                        }
+
+                        // 格式化店铺收入金额
+                        if (data.revenueByShop) {
+                            data.revenueByShop = data.revenueByShop.map(item => ({
+                                ...item,
+                                revenue: this.formatMoney(item.revenue || 0)
+                            }))
+                        }
+
+                        // 格式化账单金额
+                        if (data.billStats) {
+                            data.billStats.totalBillAmount = this.formatMoney(data.billStats.totalBillAmount || 0)
+                            data.billStats.paidBillAmount = this.formatMoney(data.billStats.paidBillAmount || 0)
+                        }
+
+                        this.setData({
+                            overview: data.overview || {},
+                            salesTrend: data.salesTrend || [],
+                            productOrderRank: data.productOrderRank || [],
+                            productSalesRank: data.productSalesRank || [],
+                            revenueByShop: data.revenueByShop || [],
+                            orderStatusDist: data.orderStatusDist || {},
+                            billStats: data.billStats || {},
+                            orderStatsByDeliveryDate: data.orderStatsByDeliveryDate || [],
+                            deliveryStatsByDate: data.deliveryStatsByDate || []
+                        })
+                        resolve()
+                    } else {
+                        reject()
                     }
-
-                    // 格式化店铺收入金额
-                    if (data.revenueByShop) {
-                        data.revenueByShop = data.revenueByShop.map(item => ({
-                            ...item,
-                            revenue: this.formatMoney(item.revenue || 0)
-                        }))
-                    }
-
-                    // 格式化账单金额
-                    if (data.billStats) {
-                        data.billStats.totalBillAmount = this.formatMoney(data.billStats.totalBillAmount || 0)
-                        data.billStats.paidBillAmount = this.formatMoney(data.billStats.paidBillAmount || 0)
-                    }
-
-                    this.setData({
-                        overview: data.overview || {},
-                        salesTrend: data.salesTrend || [],
-                        productOrderRank: data.productOrderRank || [],
-                        productSalesRank: data.productSalesRank || [],
-                        revenueByShop: data.revenueByShop || [],
-                        orderStatusDist: data.orderStatusDist || {},
-                        billStats: data.billStats || {}
+                },
+                fail: (err) => {
+                    console.error('加载数据失败:', err)
+                    wx.showToast({
+                        title: '加载失败',
+                        icon: 'error'
                     })
+                    reject()
                 }
-            },
-            fail: (err) => {
-                console.error('加载数据失败:', err)
-                wx.showToast({
-                    title: '加载失败',
-                    icon: 'error'
-                })
-            },
-            complete: () => {
-                wx.hideLoading()
-                this.setData({ loading: false })
-            }
+            })
+        })
+    },
+
+    /**
+     * 加载门店商品统计
+     */
+    loadShopProductStats() {
+        return new Promise((resolve, reject) => {
+            wx.request({
+                url: `${app.globalData.baseUrl}/branch/shop-product-statistics`,
+                method: 'GET',
+                data: {
+                    startDate: this.data.startDate,
+                    endDate: this.data.endDate
+                },
+                header: {
+                    'Authorization': `Bearer ${app.globalData.token}`
+                },
+                success: (res) => {
+                    if (res.data.code === 200) {
+                        // 处理数据，为每个商品添加格式化的完成率
+                        const shopProductStats = (res.data.data || []).map(shop => {
+                            if (shop.products && shop.products.length > 0) {
+                                shop.products = shop.products.map(product => {
+                                    // 计算并格式化完成率
+                                    if (product.orderQuantity > 0) {
+                                        product.completionRate = (product.completedQuantity / product.orderQuantity * 100).toFixed(1)
+                                    } else {
+                                        product.completionRate = '0.0'
+                                    }
+                                    return product
+                                })
+                            }
+                            return shop
+                        })
+                        this.setData({
+                            shopProductStats: shopProductStats
+                        })
+                    }
+                    resolve()
+                },
+                fail: (err) => {
+                    console.error('加载门店商品统计失败:', err)
+                    resolve() // 不阻塞其他数据加载
+                }
+            })
         })
     },
 

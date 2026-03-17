@@ -30,6 +30,15 @@
             </view>
         </view>
 
+        <!-- 送达照片 -->
+        <view class="section" wx:if="{{order.deliveryPhoto}}">
+            <view class="section-title">送达照片</view>
+            <view class="delivery-photo-section">
+                <image class="delivery-photo" src="{{order.deliveryPhoto}}" mode="aspectFit" bindtap="onPreviewPhoto" />
+                <text class="photo-tip">点击图片可放大查看</text>
+            </view>
+        </view>
+
         <!-- 商品列表 -->
         <view class="section">
             <view class="section-title">商品清单</view>

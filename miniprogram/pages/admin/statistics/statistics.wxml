@@ -25,6 +25,9 @@
     <view class="tab-item {{activeTab === 'shop' ? 'active' : ''}}" data-tab="shop" bindtap="switchTab">
       <text>店铺分析</text>
     </view>
+    <view class="tab-item {{activeTab === 'deliveryStats' ? 'active' : ''}}" data-tab="deliveryStats" bindtap="switchTab">
+      <text>送达统计</text>
+    </view>
   </view>
 
   <!-- 数据概览 -->
@@ -238,6 +241,37 @@
       <view class="empty-tip" wx:else>
         <text>暂无数据</text>
       </view>
+    </view>
+  </view>
+
+  <!-- 送达数据统计（总管理只看送达数据） -->
+  <view class="content" wx:if="{{activeTab === 'deliveryStats'}}">
+    <view class="stats-section tips-section">
+      <view class="tips-text">送达数据按日期整理，了解商品销量趋势</view>
+    </view>
+    <view class="stats-section" wx:for="{{deliveryStatsByDate}}" wx:key="date">
+      <view class="section-title">
+        <text>{{item.date}}</text>
+        <text class="sub-title">（{{item.totalDeliveries}}次送达）</text>
+      </view>
+      <view class="product-table">
+        <view class="table-header">
+          <view class="table-cell">商品名称</view>
+          <view class="table-cell">送达数量</view>
+        </view>
+        <view class="table-body">
+          <view class="table-row" wx:for="{{item.products}}" wx:for-item="product" wx:key="productId">
+            <view class="table-cell product-name">{{product.productName}}</view>
+            <view class="table-cell">{{product.deliveredQuantity}} {{product.unit}}</view>
+          </view>
+        </view>
+        <view class="empty-tip" wx:if="{{!item.products || item.products.length === 0}}">
+          <text>暂无数据</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:if="{{deliveryStatsByDate.length === 0}}">
+      <text>暂无送达数据</text>
     </view>
   </view>
 

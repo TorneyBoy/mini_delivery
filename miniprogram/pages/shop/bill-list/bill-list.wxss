@@ -16,10 +16,55 @@
     padding: 20rpx;
 }
 
+/* 日期分组标题 */
+.date-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24rpx 16rpx 16rpx;
+    background-color: transparent;
+}
+
+.date-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.date-text {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+}
+
+.date-stats {
+    font-size: 24rpx;
+    color: #999;
+    margin-top: 4rpx;
+}
+
+.date-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.summary-amount {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #e64340;
+}
+
+.summary-status {
+    font-size: 22rpx;
+    color: #ff9800;
+    margin-top: 4rpx;
+}
+
+/* 账单卡片 */
 .bill-card {
     background-color: #fff;
     border-radius: 16rpx;
-    margin-bottom: 20rpx;
+    margin-bottom: 16rpx;
     overflow: hidden;
     box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
 }
@@ -28,7 +73,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 24rpx;
+    padding: 20rpx 24rpx;
     border-bottom: 1rpx solid #f5f5f5;
 }
 
@@ -37,20 +82,13 @@
     flex-direction: column;
 }
 
-.bill-date {
-    font-size: 30rpx;
-    color: #333;
-    font-weight: 500;
-    margin-bottom: 8rpx;
-}
-
 .bill-no {
-    font-size: 24rpx;
-    color: #999;
+    font-size: 26rpx;
+    color: #666;
 }
 
 .bill-status {
-    font-size: 26rpx;
+    font-size: 24rpx;
     font-weight: 500;
     padding: 6rpx 16rpx;
     border-radius: 20rpx;
@@ -83,7 +121,7 @@
 }
 
 .amount-value {
-    font-size: 40rpx;
+    font-size: 36rpx;
     color: #e64340;
     font-weight: bold;
 }
@@ -93,12 +131,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20rpx 24rpx;
+    padding: 16rpx 24rpx;
     background-color: #fafafa;
 }
 
 .bill-time {
-    font-size: 24rpx;
+    font-size: 22rpx;
     color: #999;
 }
 
@@ -107,23 +145,32 @@
     gap: 16rpx;
 }
 
-.btn-pay, .btn-detail {
-    padding: 0 28rpx;
-    height: 64rpx;
-    line-height: 64rpx;
-    font-size: 26rpx;
-    border-radius: 32rpx;
-    margin: 0;
+.btn-pay {
+    background-color: #07c160;
+    color: #fff;
+    font-size: 24rpx;
+    padding: 12rpx 24rpx;
+    border-radius: 30rpx;
+    border: none;
+    line-height: 1.4;
 }
 
-.btn-pay {
-    background: linear-gradient(135deg, #e64340, #d63031);
-    color: #fff;
+.btn-pay::after {
+    border: none;
 }
 
 .btn-detail {
     background-color: #f5f5f5;
     color: #666;
+    font-size: 24rpx;
+    padding: 12rpx 24rpx;
+    border-radius: 30rpx;
+    border: none;
+    line-height: 1.4;
+}
+
+.btn-detail::after {
+    border: none;
 }
 
 /* 空状态 */
@@ -131,7 +178,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 120rpx 0;
+    justify-content: center;
+    padding: 100rpx 0;
 }
 
 .empty-icon {
@@ -140,8 +188,14 @@
 }
 
 .empty-text {
-    font-size: 28rpx;
+    font-size: 32rpx;
     color: #999;
+    margin-bottom: 10rpx;
+}
+
+.empty-desc {
+    font-size: 26rpx;
+    color: #ccc;
 }
 
 /* 加载状态 */
@@ -152,14 +206,15 @@
     font-size: 26rpx;
 }
 
+/* 没有更多 */
 .no-more {
     text-align: center;
     padding: 30rpx;
-    color: #ccc;
-    font-size: 24rpx;
+    color: #999;
+    font-size: 26rpx;
 }
 
 /* 底部占位 */
 .bottom-placeholder {
-    height: 140rpx;
+    height: 120rpx;
 }

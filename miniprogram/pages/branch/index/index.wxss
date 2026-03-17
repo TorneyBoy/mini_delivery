@@ -31,12 +31,19 @@
   margin-top: 8rpx;
 }
 
+.header-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.change-password-btn,
 .logout-btn {
   padding: 16rpx 32rpx;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 30rpx;
 }
 
+.change-password-btn text,
 .logout-btn text {
   font-size: 26rpx;
   color: #ffffff;
@@ -225,4 +232,51 @@
 .quick-btn text {
   font-size: 26rpx;
   color: #ffffff;
+}
+
+/* 分享链接 */
+.share-section {
+  margin: 20rpx 30rpx 0;
+  padding: 30rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.share-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 30rpx;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.share-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.share-btn.shop-share {
+  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
+}
+
+.share-btn.driver-share {
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+}
+
+.share-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.share-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
 }

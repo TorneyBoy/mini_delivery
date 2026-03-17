@@ -1,0 +1,16 @@
+// 判断订单是否被选中
+function isOrderSelected(selectedOrderIds, orderId) {
+  if (!selectedOrderIds || selectedOrderIds.length === 0) {
+    return false;
+  }
+  for (var i = 0; i < selectedOrderIds.length; i++) {
+    if (selectedOrderIds[i] == orderId) {
+      return true;
+    }
+  }
+  return false;
+}
+
+module.exports = {
+  isOrderSelected: isOrderSelected
+};

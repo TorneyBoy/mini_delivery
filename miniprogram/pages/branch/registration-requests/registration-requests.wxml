@@ -1,0 +1,83 @@
+<!--pages/branch/registration-requests/registration-requests.wxml-->
+<view class="container">
+  <!-- 顶部统计 -->
+  <view class="header">
+    <view class="pending-count">
+      <text class="count-number">{{totalPending}}</text>
+      <text class="count-label">待审核申请</text>
+    </view>
+  </view>
+
+  <!-- 标签切换 -->
+  <view class="tabs">
+    <view class="tab-item {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+      全部({{totalPending}})
+    </view>
+    <view class="tab-item {{activeTab === 'shop' ? 'active' : ''}}" bindtap="switchTab" data-tab="shop">
+      店铺({{shops.length}})
+    </view>
+    <view class="tab-item {{activeTab === 'driver' ? 'active' : ''}}" bindtap="switchTab" data-tab="driver">
+      司机({{drivers.length}})
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{!loading && totalPending === 0}}" class="empty">
+    <text class="empty-icon">📭</text>
+    <text class="empty-text">暂无待审核的注册申请</text>
+  </view>
+
+  <!-- 店铺申请列表 -->
+  <view wx:if="{{!loading && (activeTab === 'all' || activeTab === 'shop') && shops.length > 0}}" class="section">
+    <view wx:if="{{activeTab === 'all'}}" class="section-title">店铺注册申请</view>
+    <view class="request-list">
+      <view class="request-item" wx:for="{{shops}}" wx:key="id">
+        <view class="request-info">
+          <view class="request-type shop">店铺</view>
+          <view class="request-detail">
+            <view class="request-name">{{item.name}}</view>
+            <view class="request-meta">
+              <text>📱 {{item.phone}}</text>
+            </view>
+            <view class="request-meta" wx:if="{{item.address}}">
+              <text>📍 {{item.address}}</text>
+            </view>
+            <view class="request-time">{{item.createdAt}}</view>
+          </view>
+        </view>
+        <view class="request-actions">
+          <view class="btn-approve" bindtap="reviewShop" data-id="{{item.id}}" data-action="approve">通过</view>
+          <view class="btn-reject" bindtap="reviewShop" data-id="{{item.id}}" data-action="reject">拒绝</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 司机申请列表 -->
+  <view wx:if="{{!loading && (activeTab === 'all' || activeTab === 'driver') && drivers.length > 0}}" class="section">
+    <view wx:if="{{activeTab === 'all'}}" class="section-title">司机注册申请</view>
+    <view class="request-list">
+      <view class="request-item" wx:for="{{drivers}}" wx:key="id">
+        <view class="request-info">
+          <view class="request-type driver">司机</view>
+          <view class="request-detail">
+            <view class="request-name">{{item.name}}</view>
+            <view class="request-meta">
+              <text>📱 {{item.phone}}</text>
+            </view>
+            <view class="request-time">{{item.createdAt}}</view>
+          </view>
+        </view>
+        <view class="request-actions">
+          <view class="btn-approve" bindtap="reviewDriver" data-id="{{item.id}}" data-action="approve">通过</view>
+          <view class="btn-reject" bindtap="reviewDriver" data-id="{{item.id}}" data-action="reject">拒绝</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

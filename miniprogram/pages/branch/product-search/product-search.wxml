@@ -1,0 +1,64 @@
+<!-- pages/branch/product-search/product-search.wxml -->
+<view class="container">
+    <!-- 搜索类型切换 -->
+    <view class="search-type">
+        <view class="type-item {{searchType === 'name' ? 'active' : ''}}" bindtap="switchSearchType" data-type="name">
+            <text>名称搜索</text>
+        </view>
+        <view class="type-item {{searchType === 'code' ? 'active' : ''}}" bindtap="switchSearchType" data-type="code">
+            <text>扫码搜索</text>
+        </view>
+    </view>
+
+    <!-- 搜索框 -->
+    <view class="search-box">
+        <input class="search-input" 
+               placeholder="{{searchType === 'name' ? '请输入商品名称' : '请输入或扫描条码'}}" 
+               value="{{searchKey}}" 
+               bindinput="onSearchInput"
+               bindconfirm="search" />
+        <view class="scan-btn" wx:if="{{searchType === 'code'}}" bindtap="scanCode">
+            <text>📷</text>
+        </view>
+        <view class="search-btn" bindtap="search">
+            <text>搜索</text>
+        </view>
+    </view>
+
+    <!-- 搜索结果 -->
+    <view class="result-section">
+        <view class="result-list" wx:if="{{products.length > 0}}">
+            <view class="product-item" wx:for="{{products}}" wx:key="upcCode" bindtap="selectProduct" data-product="{{item}}">
+                <image class="product-image" src="{{item.imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.imageUrl}}" />
+                <view class="product-info">
+                    <text class="product-name">{{item.name}}</text>
+                    <text class="product-brand" wx:if="{{item.brand}}">品牌：{{item.brand}}</text>
+                    <text class="product-spec" wx:if="{{item.spec}}">规格：{{item.spec}}</text>
+                    <text class="product-category" wx:if="{{item.category}}">类目：{{item.category}}</text>
+                    <text class="product-code">条码：{{item.upcCode}}</text>
+                </view>
+                <view class="select-arrow">></view>
+            </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{searched && products.length === 0 && !loading}}">
+            <text class="empty-icon">🔍</text>
+            <text class="empty-text">未找到相关商品</text>
+            <text class="empty-tip">请尝试其他关键词</text>
+        </view>
+
+        <!-- 初始状态 -->
+        <view class="initial-state" wx:if="{{!searched && !loading}}">
+            <text class="initial-icon">📦</text>
+            <text class="initial-text">搜索美团商品库</text>
+            <text class="initial-tip">输入商品名称或扫描条码搜索</text>
+        </view>
+
+        <!-- 加载状态 -->
+        <view class="loading-state" wx:if="{{loading}}">
+            <view class="loading-spinner"></view>
+            <text>搜索中...</text>
+        </view>
+    </view>
+</view>

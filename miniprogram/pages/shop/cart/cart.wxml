@@ -8,8 +8,8 @@
         </view>
 
         <view class="cart-item" wx:for="{{cartItems}}" wx:key="productId">
-            <image class="item-image" 
-                   src="{{item.imageUrl ? baseUrl + item.imageUrl : '/assets/images/default-product.png'}}" 
+            <image class="item-image"
+                   src="{{item.imageUrl || '/assets/images/default-product.svg'}}"
                    mode="aspectFill"></image>
             <view class="item-info">
                 <text class="item-name">{{item.productName}}</text>

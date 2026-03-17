@@ -59,6 +59,12 @@ Page({
       success: (res) => {
         if (res.data.code === 200) {
           const newList = res.data.data.records || res.data.data.list || []
+          // 处理图片URL
+          newList.forEach(item => {
+            if (item.imageUrl) {
+              item.imageUrl = app.getImageUrl(item.imageUrl)
+            }
+          })
           this.setData({
             list: this.data.page === 1 ? newList : [...this.data.list, ...newList],
             hasMore: newList.length >= this.data.size
@@ -125,6 +131,12 @@ Page({
   goToAdd() {
     wx.navigateTo({
       url: '/pages/branch/product-edit/product-edit?mode=add'
+    })
+  },
+
+  goToMeituanSearch() {
+    wx.navigateTo({
+      url: '/pages/branch/product-search/product-search'
     })
   }
 })

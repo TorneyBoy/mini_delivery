@@ -36,6 +36,25 @@
   color: #333333;
 }
 
+.address-input {
+  padding-right: 20rpx;
+}
+
+.map-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #52c41a;
+  border-radius: 12rpx;
+  margin-left: 10rpx;
+}
+
+.map-icon {
+  font-size: 32rpx;
+}
+
 /* 设置区域 */
 .settings-section {
   background-color: #ffffff;

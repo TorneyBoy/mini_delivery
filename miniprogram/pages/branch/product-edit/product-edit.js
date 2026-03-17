@@ -24,12 +24,40 @@ Page({
     if (options.mode === 'add') {
       this.setData({ mode: 'add' })
       wx.setNavigationBarTitle({ title: '添加商品' })
+
+      // 处理从美团商品库导入的数据
+      if (options.fromMeituan && options.data) {
+        try {
+          const meituanData = JSON.parse(decodeURIComponent(options.data))
+          this.fillFromMeituan(meituanData)
+        } catch (e) {
+          console.error('解析美团数据失败', e)
+        }
+      }
     } else if (options.id) {
       const mode = options.mode || 'view'
       this.setData({ mode: mode, id: options.id })
       wx.setNavigationBarTitle({ title: mode === 'edit' ? '编辑商品' : '商品详情' })
       this.loadDetail(options.id)
     }
+  },
+
+  // 从美团数据填充表单
+  fillFromMeituan(data) {
+    const categoryIndex = this.data.categories.indexOf(data.category)
+    const unitIndex = data.unit ? this.data.units.indexOf(data.unit) : 0
+
+    this.setData({
+      name: data.name || '',
+      category: data.category || '',
+      categoryIndex: categoryIndex >= 0 ? categoryIndex : this.data.categories.length - 1,
+      imageUrl: data.imageUrl || '',
+      description: data.description || data.spec || '',
+      unit: data.unit || '斤',
+      unitIndex: unitIndex >= 0 ? unitIndex : 0
+    })
+
+    wx.showToast({ title: '已导入美团商品信息', icon: 'success' })
   },
 
   loadDetail(id) {
@@ -43,6 +71,8 @@ Page({
           const data = res.data.data
           const categoryIndex = this.data.categories.indexOf(data.category)
           const unitIndex = this.data.units.indexOf(data.unit)
+          // 处理图片URL
+          const imageUrl = data.imageUrl ? app.getImageUrl(data.imageUrl) : ''
           this.setData({
             detail: data,
             name: data.name,
@@ -53,7 +83,7 @@ Page({
             unit: data.unit,
             unitIndex: unitIndex >= 0 ? unitIndex : 0,
             description: data.description || '',
-            imageUrl: data.imageUrl || '',
+            imageUrl: imageUrl,
             status: data.status
           })
         } else {

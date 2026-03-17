@@ -348,3 +348,80 @@
   font-size: 30rpx;
   color: #999;
 }
+
+/* 提示区域 */
+.tips-section {
+  background-color: #e6f7ff;
+  border-left: 6rpx solid #1890ff;
+}
+
+.tips-text {
+  font-size: 26rpx;
+  color: #1890ff;
+  line-height: 1.5;
+}
+
+/* 副标题 */
+.sub-title {
+  font-size: 24rpx;
+  font-weight: normal;
+  color: #999;
+  margin-left: 10rpx;
+}
+
+/* 送达数据统计表格 */
+.product-table {
+  width: 100%;
+  border: 1rpx solid #e8e8e8;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  background-color: #fafafa;
+  border-bottom: 1rpx solid #e8e8e8;
+}
+
+.table-header .table-cell {
+  font-weight: 600;
+  color: #333;
+  background-color: #f5f7fa;
+}
+
+.table-body {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 20rpx 12rpx;
+  font-size: 26rpx;
+  color: #666;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.table-cell:last-child {
+  border-right: none;
+}
+
+.table-cell.product-name {
+  text-align: left;
+  justify-content: flex-start;
+  padding-left: 16rpx;
+  color: #333;
+}
