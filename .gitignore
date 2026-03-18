@@ -46,6 +46,7 @@ miniprogram/node_modules/
 
 # 项目私有配置（包含appid等敏感信息）
 miniprogram/project.private.config.json
+miniprogram/.env.js
 
 # -----------------------------------------------------
 # IDE 和编辑器

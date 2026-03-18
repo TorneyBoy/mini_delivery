@@ -1,29 +1,64 @@
 // app.js
-const config = require('./config.js');
+const DEFAULT_ENV = {
+    DEV_BASE_URL: 'http://localhost:8081/api',
+    LAN_BASE_URL: 'http://localhost:8081/api',
+    PROD_BASE_URL: 'https://api.your-domain.com/api'
+};
+
+let envConfig = {};
+try {
+    // 每位开发者本地私有配置
+    envConfig = require('./.env.js');
+} catch (e) {
+    // 回退到示例配置，保证拉代码后可直接运行
+    envConfig = require('./.env.example.js');
+}
+
+const runtimeEnv = {
+    ...DEFAULT_ENV,
+    ...envConfig
+};
 
 App({
-    globalData: {
-        userInfo: null,
-        token: null,
-        role: null,
-        baseUrl: config.baseUrl,
-        cartItems: [],  // 购物车商品列表
-        orderItems: [], // 订单商品列表
-        orderAmount: '0.00', // 订单金额
-        tencentMapKey: config.tencentMapKey
-    },
+  globalData: {
+    userInfo: null,
+    token: null,
+    role: null,
+        baseUrl: runtimeEnv.DEV_BASE_URL,
+        lanBaseUrl: runtimeEnv.LAN_BASE_URL,
+        prodBaseUrl: runtimeEnv.PROD_BASE_URL,
+    cartItems: [],  // 购物车商品列表
+    orderItems: [], // 订单商品列表
+    orderAmount: '0.00' // 订单金额
+},
 
-    onLaunch() {
-        // 检查登录状态
-        const token = wx.getStorageSync('token');
-        const userInfo = wx.getStorageSync('userInfo');
+onLaunch() {
+    // 发布版优先走生产服务器；非发布版真机走局域网，开发者工具走本地地址
+    let envVersion = 'develop';
+    try {
+        const accountInfo = wx.getAccountInfoSync();
+        envVersion = accountInfo.miniProgram.envVersion || 'develop';
+    } catch (e) {
+        // 兼容旧基础库，无法获取时保持 develop
+    }
 
-        if (token && userInfo) {
-            this.globalData.token = token;
-            this.globalData.userInfo = userInfo;
-            this.globalData.role = userInfo.role;
-        }
-    },
+    const systemInfo = wx.getSystemInfoSync();
+    if (envVersion === 'release') {
+        this.globalData.baseUrl = this.globalData.prodBaseUrl;
+    } else if (systemInfo.platform !== 'devtools') {
+        this.globalData.baseUrl = this.globalData.lanBaseUrl;
+    }
+
+    // 检查登录状态
+    const token = wx.getStorageSync('token');
+    const userInfo = wx.getStorageSync('userInfo');
+
+    if (token && userInfo) {
+        this.globalData.token = token;
+        this.globalData.userInfo = userInfo;
+        this.globalData.role = userInfo.role;
+    }
+},
 
     // 登录方法
     login(phone, password) {
