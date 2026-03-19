@@ -5,7 +5,7 @@ services:
     container_name: delivery-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: mima0221
+      MYSQL_ROOT_PASSWORD: MiniDelivery_mima0221
       MYSQL_DATABASE: delivery
       TZ: Asia/Shanghai
     ports:
@@ -35,7 +35,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/delivery?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: mima0221
+      SPRING_DATASOURCE_PASSWORD: MiniDelivery_mima0221
       TZ: Asia/Shanghai
       # 文件上传路径配置
       FILE_UPLOAD_PATH: /data/upload/
