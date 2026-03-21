@@ -4,6 +4,10 @@
 -- 执行此脚本将删除并重建整个数据库
 -- =====================================================
 
+-- 设置字符集为 utf8mb4
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 -- 设置宽松模式，避免数据长度问题
 SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';
 SET SESSION sql_mode = 'NO_ENGINE_SUBSTITUTION';
