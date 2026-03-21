@@ -61,6 +61,8 @@ services:
       - ./nginx/ssl:/home/mini_delivery/nginx/ssl:ro
       # 静态网站目录（与server同级）
       - ./html:/home/mini_delivery/html:ro
+      # 管理后台目录
+      - ./admin:/home/mini_delivery/admin:ro
       # 挂载图片目录，供Nginx直接提供静态文件服务
       - upload_data:/data/upload:ro
     depends_on:
