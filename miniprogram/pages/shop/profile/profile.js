@@ -18,6 +18,11 @@ Page({
     },
 
     onLoad() {
+        // 个人中心需要登录
+        if (!app.checkLogin()) {
+            wx.reLaunch({ url: '/pages/welcome/welcome' });
+            return;
+        }
         this.loadShopInfo();
         this.loadStatistics();
     },

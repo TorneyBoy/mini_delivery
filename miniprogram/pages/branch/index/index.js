@@ -20,6 +20,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    // 检查登录状态
+    if (!app.checkLogin()) {
+      return
+    }
     this.loadUserInfo()
     this.loadStatistics()
   },
@@ -28,6 +32,10 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    // 检查登录状态
+    if (!app.globalData.token) {
+      return
+    }
     this.loadStatistics()
   },
 

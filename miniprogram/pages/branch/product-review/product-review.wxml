@@ -14,7 +14,7 @@
             </view>
             
             <view class="item-content">
-                <image class="product-image" src="{{item.imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.imageUrl}}" />
+                <image class="product-image" src="{{item.imageUrl || '/images/default-product.svg'}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.imageUrl}}" binderror="onImageError" />
                 <view class="product-info">
                     <text class="info-row" wx:if="{{item.category}}">类别：{{item.category}}</text>
                     <text class="info-row" wx:if="{{item.description}}">描述：{{item.description}}</text>
@@ -54,7 +54,7 @@
 
             <view class="modal-body">
                 <view class="review-image" wx:if="{{currentRequest.imageUrl}}">
-                    <image src="{{currentRequest.imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{currentRequest.imageUrl}}" />
+                    <image src="{{currentRequest.imageUrl || '/images/default-product.svg'}}" mode="aspectFill" bindtap="previewImage" data-url="{{currentRequest.imageUrl}}" binderror="onImageError" />
                 </view>
 
                 <view class="product-detail">

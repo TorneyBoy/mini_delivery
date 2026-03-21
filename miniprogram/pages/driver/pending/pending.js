@@ -10,10 +10,18 @@ Page({
   },
 
   onLoad() {
+    // 检查登录状态
+    if (!app.checkLogin()) {
+      return
+    }
     this.loadPendingOrders();
   },
 
   onShow() {
+    // 检查登录状态
+    if (!app.globalData.token) {
+      return
+    }
     this.loadPendingOrders();
   },
 

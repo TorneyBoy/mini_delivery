@@ -1,0 +1,80 @@
+<!--pages/welcome/welcome.wxml-->
+<view class="welcome-container">
+  <!-- 顶部Logo区域 -->
+  <view class="header">
+    <image class="logo" src="/assets/images/logo.svg" mode="aspectFit"></image>
+    <text class="title">配送管理系统</text>
+    <text class="subtitle">超市订货配送一站式服务平台</text>
+  </view>
+
+  <!-- 平台介绍 -->
+  <view class="intro-section">
+    <view class="intro-card">
+      <view class="intro-icon">📦</view>
+      <view class="intro-content">
+        <text class="intro-title">便捷订货</text>
+        <text class="intro-desc">在线浏览商品，一键下单采购</text>
+      </view>
+    </view>
+    <view class="intro-card">
+      <view class="intro-icon">🚚</view>
+      <view class="intro-content">
+        <text class="intro-title">高效配送</text>
+        <text class="intro-desc">专业司机配送，准时送达</text>
+      </view>
+    </view>
+    <view class="intro-card">
+      <view class="intro-icon">📊</view>
+      <view class="intro-content">
+        <text class="intro-title">订单管理</text>
+        <text class="intro-desc">实时查看订单状态和配送进度</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 供应商列表 -->
+  <view class="supplier-section" wx:if="{{hasSuppliers}}">
+    <text class="section-title">选择供应商开始浏览</text>
+    <view class="supplier-list">
+      <view
+        class="supplier-item"
+        wx:for="{{suppliers}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        data-name="{{item.brandName}}"
+        bindtap="onSelectSupplier">
+        <view class="supplier-icon">🏪</view>
+        <text class="supplier-name">{{item.brandName}}</text>
+        <text class="supplier-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-section" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 无供应商提示 -->
+  <view class="empty-section" wx:if="{{!loading && !hasSuppliers}}">
+    <view class="empty-icon">🏪</view>
+    <text class="empty-title">暂无可用供应商</text>
+    <text class="empty-desc">请联系管理员获取供应商信息，或登录已有账号</text>
+  </view>
+
+  <!-- 底部登录入口 -->
+  <view class="footer">
+    <view class="footer-tips">
+      <text>已有账号？</text>
+    </view>
+    <button class="btn-login" bindtap="goToLogin">登录</button>
+    
+    <view class="divider">
+      <view class="divider-line"></view>
+      <text class="divider-text">或</text>
+      <view class="divider-line"></view>
+    </view>
+    
+    <button class="btn-register" bindtap="goToRegister">注册新账号</button>
+  </view>
+</view>

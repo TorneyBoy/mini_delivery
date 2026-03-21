@@ -49,9 +49,15 @@ Page({
     // 预览图片
     previewImage(e) {
         const url = e.currentTarget.dataset.url
+        if (!url) return
         wx.previewImage({
             urls: [url]
         })
+    },
+
+    // 图片加载失败处理
+    onImageError(e) {
+        console.log('图片加载失败', e)
     },
 
     // 打开审核弹窗

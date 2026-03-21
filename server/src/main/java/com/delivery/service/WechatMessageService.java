@@ -48,4 +48,20 @@ public interface WechatMessageService {
      * @param amount 支付金额
      */
     void sendPaymentSuccessNotice(Long shopId, Long billId, String amount);
+
+    /**
+     * 检查微信服务是否可用
+     *
+     * @return 是否可用
+     */
+    boolean isAvailable();
+
+    /**
+     * 生成小程序码
+     *
+     * @param scene 场景值
+     * @param page  页面路径
+     * @return 小程序码图片URL
+     */
+    String generateQrCode(String scene, String page);
 }

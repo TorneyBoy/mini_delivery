@@ -1882,8 +1882,8 @@ public class BranchController {
                     Map<String, Object> itemInfo = new HashMap<>();
                     itemInfo.put("productName", product != null ? product.getName() : "未知商品");
                     itemInfo.put("quantity", item.getQuantity());
-                    itemInfo.put("price", item.getPrice());
-                    itemInfo.put("amount", item.getPrice().multiply(new BigDecimal(item.getQuantity())));
+                    itemInfo.put("price", item.getUnitPrice());
+                    itemInfo.put("amount", item.getUnitPrice().multiply(item.getQuantity()));
                     itemDetails.add(itemInfo);
                 }
                 orderInfo.put("items", itemDetails);
@@ -2010,5 +2010,56 @@ public class BranchController {
         log.info("发送账单通知成功，billId: {}, shopId: {}", billId, shop.getId());
 
         return Result.success();
+    }
+
+    /**
+     * 生成小程序码
+     */
+    @Operation(summary = "生成小程序码", description = "生成店铺或司机注册的小程序码")
+    @PostMapping("/generate-qrcode")
+    public Result<Map<String, String>> generateQrCode(@RequestBody Map<String, Object> params) {
+        Long branchManagerId = requireCurrentBranchManagerId();
+
+        String role = (String) params.get("role");
+        Long managerId = params.get("branchManagerId") != null
+                ? Long.valueOf(params.get("branchManagerId").toString())
+                : branchManagerId;
+
+        if (role == null || role.isEmpty()) {
+            throw new BusinessException("角色类型不能为空");
+        }
+
+        if (!role.equals("SHOP") && !role.equals("DRIVER")) {
+            throw new BusinessException("角色类型无效");
+        }
+
+        // 验证分管理ID
+        BranchManager branchManager = branchManagerMapper.selectById(managerId);
+        if (branchManager == null) {
+            throw new BusinessException(ResultCode.DATA_NOT_FOUND, "分管理不存在");
+        }
+
+        // 检查微信服务是否可用
+        if (wechatMessageService == null || !wechatMessageService.isAvailable()) {
+            throw new BusinessException("微信小程序服务未配置，请联系管理员配置 appid 和 secret");
+        }
+
+        try {
+            // 生成小程序码
+            String scene = "role=" + role + "&managerId=" + managerId;
+            String page = "pages/register/register";
+
+            String qrCodeUrl = wechatMessageService.generateQrCode(scene, page);
+
+            Map<String, String> result = new HashMap<>();
+            result.put("qrCodeUrl", qrCodeUrl);
+
+            log.info("生成小程序码成功，role: {}, managerId: {}", role, managerId);
+
+            return Result.success(result);
+        } catch (Exception e) {
+            log.error("生成小程序码失败", e);
+            throw new BusinessException("生成小程序码失败: " + e.getMessage());
+        }
     }
 }

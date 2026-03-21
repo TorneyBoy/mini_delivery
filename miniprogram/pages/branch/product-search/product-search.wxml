@@ -29,7 +29,7 @@
     <view class="result-section">
         <view class="result-list" wx:if="{{products.length > 0}}">
             <view class="product-item" wx:for="{{products}}" wx:key="upcCode" bindtap="selectProduct" data-product="{{item}}">
-                <image class="product-image" src="{{item.imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.imageUrl}}" />
+                <image class="product-image" src="{{item.imageUrl || '/images/default-product.svg'}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.imageUrl}}" binderror="onImageError" />
                 <view class="product-info">
                     <text class="product-name">{{item.name}}</text>
                     <text class="product-brand" wx:if="{{item.brand}}">品牌：{{item.brand}}</text>

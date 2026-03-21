@@ -1,8 +1,8 @@
 // app.js
 const DEFAULT_ENV = {
     DEV_BASE_URL: 'http://localhost:8081/api',
-    LAN_BASE_URL: 'http://localhost:8081/api',
-    PROD_BASE_URL: 'https://api.your-domain.com/api'
+    LAN_BASE_URL: 'http://192.168.42.211:8081/api',
+    PROD_BASE_URL: 'https://huayuan.ink/api'
 };
 
 let envConfig = {};
@@ -20,45 +20,45 @@ const runtimeEnv = {
 };
 
 App({
-  globalData: {
-    userInfo: null,
-    token: null,
-    role: null,
+    globalData: {
+        userInfo: null,
+        token: null,
+        role: null,
         baseUrl: runtimeEnv.DEV_BASE_URL,
         lanBaseUrl: runtimeEnv.LAN_BASE_URL,
         prodBaseUrl: runtimeEnv.PROD_BASE_URL,
-    cartItems: [],  // 购物车商品列表
-    orderItems: [], // 订单商品列表
-    orderAmount: '0.00' // 订单金额
-},
+        cartItems: [],  // 购物车商品列表
+        orderItems: [], // 订单商品列表
+        orderAmount: '0.00' // 订单金额
+    },
 
-onLaunch() {
-    // 发布版优先走生产服务器；非发布版真机走局域网，开发者工具走本地地址
-    let envVersion = 'develop';
-    try {
-        const accountInfo = wx.getAccountInfoSync();
-        envVersion = accountInfo.miniProgram.envVersion || 'develop';
-    } catch (e) {
-        // 兼容旧基础库，无法获取时保持 develop
-    }
+    onLaunch() {
+        // 发布版优先走生产服务器；非发布版真机走局域网，开发者工具走本地地址
+        let envVersion = 'develop';
+        try {
+            const accountInfo = wx.getAccountInfoSync();
+            envVersion = accountInfo.miniProgram.envVersion || 'develop';
+        } catch (e) {
+            // 兼容旧基础库，无法获取时保持 develop
+        }
 
-    const systemInfo = wx.getSystemInfoSync();
-    if (envVersion === 'release') {
-        this.globalData.baseUrl = this.globalData.prodBaseUrl;
-    } else if (systemInfo.platform !== 'devtools') {
-        this.globalData.baseUrl = this.globalData.lanBaseUrl;
-    }
+        const systemInfo = wx.getSystemInfoSync();
+        if (envVersion === 'release') {
+            this.globalData.baseUrl = this.globalData.prodBaseUrl;
+        } else if (systemInfo.platform !== 'devtools') {
+            this.globalData.baseUrl = this.globalData.lanBaseUrl;
+        }
 
-    // 检查登录状态
-    const token = wx.getStorageSync('token');
-    const userInfo = wx.getStorageSync('userInfo');
+        // 检查登录状态
+        const token = wx.getStorageSync('token');
+        const userInfo = wx.getStorageSync('userInfo');
 
-    if (token && userInfo) {
-        this.globalData.token = token;
-        this.globalData.userInfo = userInfo;
-        this.globalData.role = userInfo.role;
-    }
-},
+        if (token && userInfo) {
+            this.globalData.token = token;
+            this.globalData.userInfo = userInfo;
+            this.globalData.role = userInfo.role;
+        }
+    },
 
     // 登录方法
     login(phone, password) {
@@ -104,16 +104,40 @@ onLaunch() {
         this.globalData.role = null;
         wx.removeStorageSync('token');
         wx.removeStorageSync('userInfo');
-        wx.reLaunch({ url: '/pages/login/login' });
+        wx.reLaunch({ url: '/pages/welcome/welcome' });
     },
 
-    // 检查登录状态
+    // 检查登录状态（仅返回状态，不自动跳转）
     checkLogin() {
-        if (!this.globalData.token) {
-            wx.reLaunch({ url: '/pages/login/login' });
-            return false;
-        }
-        return true;
+        return !!this.globalData.token;
+    },
+
+    // 要求登录（用于需要登录的功能，显示提示并跳转）
+    requireLogin(options = {}) {
+        const { title = '提示', content = '该功能需要登录后使用', redirect = '' } = options;
+
+        return new Promise((resolve, reject) => {
+            if (this.globalData.token) {
+                resolve(true);
+                return;
+            }
+
+            wx.showModal({
+                title,
+                content: content + '\n\n登录后您可以：\n· 提交订单\n· 查看订单状态\n· 接收配送通知',
+                confirmText: '去登录',
+                cancelText: '取消',
+                success: (res) => {
+                    if (res.confirm) {
+                        const url = redirect ? `/pages/login/login?redirect=${encodeURIComponent(redirect)}` : '/pages/login/login';
+                        wx.navigateTo({ url });
+                        reject('need_login');
+                    } else {
+                        reject('cancel');
+                    }
+                }
+            });
+        });
     },
 
     // 获取请求头

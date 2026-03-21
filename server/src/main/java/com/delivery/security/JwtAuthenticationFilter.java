@@ -45,8 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+            // 如果没有token，不设置认证信息，继续执行过滤器链
+            // 对于permitAll的接口，Spring Security会允许访问
         } catch (Exception ex) {
             log.error("Could not set user authentication in security context", ex);
+            // 出现异常时也不阻止请求，让Spring Security根据配置决定是否允许访问
         }
 
         filterChain.doFilter(request, response);

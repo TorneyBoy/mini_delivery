@@ -138,5 +138,10 @@ Page({
     wx.navigateTo({
       url: '/pages/branch/product-search/product-search'
     })
+  },
+
+  // 图片加载失败处理
+  onImageError(e) {
+    console.log('图片加载失败', e)
   }
 })

@@ -78,3 +78,13 @@
 .btn-login:active {
   opacity: 0.9;
 }
+
+.back-link {
+  margin-bottom: 40rpx;
+  padding: 16rpx 32rpx;
+}
+
+.back-link text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 28rpx;
+}

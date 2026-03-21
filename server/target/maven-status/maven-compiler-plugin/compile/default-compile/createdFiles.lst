@@ -8,8 +8,11 @@ com\delivery\service\BranchManagerService.class
 com\delivery\controller\PayController.class
 com\delivery\service\ShopService.class
 com\delivery\entity\DeliveryOrder.class
+com\delivery\controller\GuestController$SupplierInfo.class
 com\delivery\enums\UserRole.class
+com\delivery\config\OssConfig.class
 com\delivery\entity\Order.class
+com\delivery\dto\request\ChangePasswordRequest.class
 com\delivery\dto\response\DeliveryListResponse.class
 com\delivery\service\MeituanService.class
 com\delivery\dto\response\BillResponse$BillOrderResponse.class
@@ -25,6 +28,7 @@ com\delivery\entity\DeliveryList.class
 com\delivery\service\impl\AuthServiceImpl.class
 com\delivery\util\UserContext.class
 com\delivery\dto\request\RegisterRequest.class
+com\delivery\controller\GuestController.class
 com\delivery\exception\GlobalExceptionHandler.class
 com\delivery\mapper\OrderMapper.class
 com\delivery\entity\Driver.class
@@ -58,6 +62,7 @@ com\delivery\task\AutoReceiveTask.class
 com\delivery\DeliveryApplication.class
 com\delivery\dto\request\ProductImageReviewDto.class
 com\delivery\task\OrderAssignerTask.class
+com\delivery\service\OssService.class
 com\delivery\dto\response\DriverStatisticsResponse.class
 com\delivery\service\impl\ShopServiceImpl.class
 com\delivery\dto\response\DeliveryHistoryResponse.class
@@ -73,6 +78,7 @@ com\delivery\dto\response\ShopResponse.class
 com\delivery\mapper\BranchManagerMapper.class
 com\delivery\entity\Product.class
 com\delivery\mapper\ShopMapper.class
+com\delivery\controller\GuestController$GuestProductResponse.class
 com\delivery\dto\request\OrderItemModifyRequest$ModifyItem.class
 com\delivery\mapper\ProductMapper.class
 com\delivery\config\MyBatisPlusConfig.class

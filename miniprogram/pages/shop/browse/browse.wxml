@@ -1,0 +1,76 @@
+<!--pages/shop/browse/browse.wxml-->
+<view class="browse-container">
+  <!-- 分类标签 -->
+  <scroll-view class="category-scroll" scroll-x>
+    <view class="category-list">
+      <view 
+        class="category-item {{currentCategory === '' ? 'active' : ''}}" 
+        data-category=""
+        bindtap="onCategoryChange">全部</view>
+      <view 
+        class="category-item {{currentCategory === item ? 'active' : ''}}" 
+        wx:for="{{categories}}" 
+        wx:key="*this"
+        data-category="{{item}}"
+        bindtap="onCategoryChange">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 商品列表 -->
+  <scroll-view class="product-list" scroll-y>
+    <view class="product-item" wx:for="{{products}}" wx:key="id">
+      <image class="product-image" src="{{item.imageUrl}}" mode="aspectFill"></image>
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <text class="product-category">{{item.category}}</text>
+        <view class="product-price-row">
+          <text class="product-price">¥{{item.price}}/{{item.unit}}</text>
+        </view>
+      </view>
+      <view class="quantity-control">
+        <view class="btn-minus" wx:if="{{item.quantity > 0}}" bindtap="onMinus" data-id="{{item.id}}">-</view>
+        <input 
+          class="quantity-input" 
+          type="digit" 
+          value="{{item.quantity || ''}}" 
+          placeholder="0"
+          bindinput="onInputQuantity"
+          data-id="{{item.id}}" 
+          wx:if="{{item.quantity > 0}}" />
+        <view class="btn-plus" bindtap="onPlus" data-id="{{item.id}}">+</view>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+    <view class="load-more" wx:elif="{{!hasMore && products.length > 0}}">
+      <text>没有更多了</text>
+    </view>
+    <view class="empty-tip" wx:if="{{!loading && products.length === 0}}">
+      <text>暂无商品</text>
+    </view>
+  </scroll-view>
+
+  <!-- 底部购物车栏 -->
+  <view class="cart-bar">
+    <view class="cart-info">
+      <view class="cart-icon">
+        <text class="cart-count" wx:if="{{totalCount > 0}}">{{totalCount}}</text>
+      </view>
+      <view class="cart-amount">
+        <text class="amount-label">合计：</text>
+        <text class="amount-value">¥{{totalAmount}}</text>
+      </view>
+    </view>
+    <button class="btn-checkout" bindtap="goToCheckout">
+      去结算
+    </button>
+  </view>
+
+  <!-- 登录提示（未登录时显示） -->
+  <view class="login-tip" wx:if="{{!isLoggedIn}}" bindtap="goToLogin">
+    <text>💡 登录后可保存订单记录、接收配送通知</text>
+  </view>
+</view>

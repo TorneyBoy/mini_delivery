@@ -141,6 +141,22 @@ Page({
       return;
     }
 
+    // 检查登录状态
+    if (!app.globalData.token) {
+      wx.showModal({
+        title: '提示',
+        content: '下单功能需要登录后使用。\n\n登录后您可以：\n· 提交订单\n· 查看订单状态\n· 接收配送通知',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({ url: '/pages/login/login' });
+          }
+        }
+      });
+      return;
+    }
+
     // 保存到全局
     app.globalData.orderItems = this.data.cartItems.map(item => ({
       productId: item.productId,

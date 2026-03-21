@@ -5,6 +5,10 @@
     <text class="title">配送管理系统</text>
     <text class="subtitle">请登录您的账号</text>
   </view>
+
+  <view class="back-link" bindtap="goBack">
+    <text>← 返回首页浏览</text>
+  </view>
   
   <view class="login-form">
     <view class="form-item">

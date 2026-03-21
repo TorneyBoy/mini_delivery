@@ -132,6 +132,14 @@ server/src/main/resources/*.p12
 server/src/main/resources/apiclient_*.pem
 server/src/main/resources/apiclient_*.p12
 
+# SSL证书文件（nginx/ssl目录）
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
+nginx/ssl/*.csr
+nginx/ssl/fullchain.pem
+nginx/ssl/privkey.pem
+
 # 环境变量文件
 .env
 .env.local

@@ -5,11 +5,17 @@ Page({
     data: {
         phone: '',
         password: '',
-        loading: false
+        loading: false,
+        redirect: '' // 登录后重定向地址
     },
 
-    onLoad() {
-        // 如果已登录，直接跳转到对应首页
+    onLoad(options) {
+        // 获取重定向地址
+        if (options.redirect) {
+            this.setData({ redirect: decodeURIComponent(options.redirect) });
+        }
+
+        // 如果已登录，直接跳转
         if (app.globalData.token) {
             this.redirectToHome();
         }
@@ -57,7 +63,18 @@ Page({
             });
     },
 
+    // 返回首页
+    goBack() {
+        wx.reLaunch({ url: '/pages/welcome/welcome' });
+    },
+
     redirectToHome() {
+        // 如果有重定向地址，优先跳转
+        if (this.data.redirect) {
+            wx.redirectTo({ url: this.data.redirect });
+            return;
+        }
+
         const role = app.globalData.role;
         let url = '';
 
@@ -75,7 +92,7 @@ Page({
                 url = '/pages/driver/pending/pending';
                 break;
             default:
-                url = '/pages/login/login';
+                url = '/pages/welcome/welcome';
         }
 
         wx.reLaunch({ url });

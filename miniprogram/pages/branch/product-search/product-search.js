@@ -96,5 +96,10 @@ Page({
                 urls: [url]
             })
         }
+    },
+
+    // 图片加载失败处理
+    onImageError(e) {
+        console.log('图片加载失败', e)
     }
 })

@@ -30,7 +30,8 @@
                 <image class="product-image"
                        src="{{item.imageUrl || '/assets/images/default-product.svg'}}"
                        mode="aspectFill"
-                       lazy-load></image>
+                       lazy-load
+                       binderror="onImageError"></image>
                 <view class="product-info">
                     <text class="product-name">{{item.name}}</text>
                     <view class="product-meta">

@@ -26,6 +26,11 @@ Page({
   },
 
   onLoad() {
+    // 订单列表需要登录
+    if (!app.checkLogin()) {
+      wx.reLaunch({ url: '/pages/welcome/welcome' });
+      return;
+    }
     // 初始化日期和时间
     const now = new Date();
     this.setData({

@@ -19,12 +19,22 @@ Page({
     },
 
     onLoad() {
+        // 店铺首页需要登录才能访问（显示个性化价格和购物车）
+        // 如果未登录，跳转到欢迎页
+        if (!app.checkLogin()) {
+            wx.reLaunch({ url: '/pages/welcome/welcome' });
+            return;
+        }
         this.loadShopInfo();
         this.loadCategories();
         this.loadProducts(true);
     },
 
     onShow() {
+        // 检查登录状态
+        if (!app.globalData.token) {
+            return;
+        }
         // 刷新购物车数据
         this.updateCartSummary();
     },
@@ -239,5 +249,10 @@ Page({
     // 跳转到个人中心
     goToProfile() {
         wx.redirectTo({ url: '/pages/shop/profile/profile' });
+    },
+
+    // 图片加载失败处理
+    onImageError(e) {
+        console.log('图片加载失败', e);
     }
 });

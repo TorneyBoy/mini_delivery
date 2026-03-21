@@ -206,4 +206,42 @@ public class WechatMessageServiceImpl implements WechatMessageService {
             log.error("发送支付成功通知失败，shopId: {}, billId: {}", shopId, billId, e);
         }
     }
+
+    @Override
+    public boolean isAvailable() {
+        return wxMaService != null;
+    }
+
+    @Override
+    public String generateQrCode(String scene, String page) {
+        if (wxMaService == null) {
+            throw new RuntimeException("微信小程序服务未配置");
+        }
+
+        try {
+            // 生成小程序码（无限制版本）
+            // 使用 WxMaCodeLineColor 创建默认线条颜色
+            cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor lineColor = new cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor(
+                    "0", "0", "0");
+            byte[] qrCodeBytes = wxMaService.getQrcodeService().createWxaCodeUnlimitBytes(
+                    scene, // scene参数
+                    page, // page参数
+                    true, // checkPath
+                    "release", // envVersion
+                    430, // width
+                    false, // autoColor
+                    lineColor, // lineColor
+                    false // isHyaline
+            );
+
+            // 将图片保存到本地或OSS，返回URL
+            // 这里简化处理，返回 base64 格式的图片
+            String base64 = java.util.Base64.getEncoder().encodeToString(qrCodeBytes);
+            return "data:image/png;base64," + base64;
+
+        } catch (Exception e) {
+            log.error("生成小程序码失败", e);
+            throw new RuntimeException("生成小程序码失败: " + e.getMessage());
+        }
+    }
 }

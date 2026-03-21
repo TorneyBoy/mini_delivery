@@ -5,7 +5,7 @@ services:
     container_name: delivery-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: mima0221
+      MYSQL_ROOT_PASSWORD: MiniDelivery_mima0221
       MYSQL_DATABASE: delivery
       TZ: Asia/Shanghai
     ports:
@@ -26,7 +26,7 @@ services:
   backend:
     build:
       context: ./server
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile
     container_name: delivery-backend
     restart: unless-stopped
     depends_on:
@@ -35,7 +35,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/delivery?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: mima0221
+      SPRING_DATASOURCE_PASSWORD: MiniDelivery_mima0221
       TZ: Asia/Shanghai
       # 文件上传路径配置
       FILE_UPLOAD_PATH: /data/upload/
@@ -57,7 +57,10 @@ services:
       - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
+      # SSL证书挂载 - 与nginx配置中的路径一致
+      - ./nginx/ssl:/home/mini_delivery/nginx/ssl:ro
+      # 静态网站目录（与server同级）
+      - ./html:/home/mini_delivery/html:ro
       # 挂载图片目录，供Nginx直接提供静态文件服务
       - upload_data:/data/upload:ro
     depends_on:
