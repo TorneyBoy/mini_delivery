@@ -53,8 +53,8 @@ services:
     container_name: delivery-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "1443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       # SSL证书挂载 - 与nginx配置中的路径一致
